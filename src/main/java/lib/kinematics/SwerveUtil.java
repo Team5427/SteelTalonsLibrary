@@ -1,5 +1,6 @@
 package lib.kinematics;
 
+import lib.drivers.CANDeviceId;
 import lib.drivers.ComplexGearRatio;
 
 public class SwerveUtil {
@@ -9,9 +10,9 @@ public class SwerveUtil {
     public static final int kRearLeftModuleIdx = 2;
     public static final int kRearRightModuleIdx = 3;
 
-    public static final int[] kSteerMotorIds = new int[4];
-    public static final int[] kDriveMotorIds = new int[4];
-    public static final int[] kCancoderIds = new int[4];
+    public static final CANDeviceId[] kSteerMotorIds = new CANDeviceId[4];
+    public static final CANDeviceId[] kDriveMotorIds = new CANDeviceId[4];
+    public static final CANDeviceId[] kCancoderIds = new CANDeviceId[4];
     public static final double[] kModuleOffsets = new double[4];
 
     public static final ComplexGearRatio kSDSSteerGearRatio = new ComplexGearRatio(1.0 / (150.0 / 7.0));
