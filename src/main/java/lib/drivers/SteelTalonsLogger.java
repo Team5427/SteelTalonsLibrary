@@ -2,8 +2,16 @@ package lib.drivers;
 
 import java.util.HashMap;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
@@ -29,5 +37,39 @@ public class SteelTalonsLogger {
             return;
         }
     }
-    
+
+    // Logs the pose of an object into network tables for Advantage Scope to Utilize
+    public static void post3dPose(Pose3d... poses) {
+        StructArrayPublisher<Pose3d> arrayPublisher = NetworkTableInstance.getDefault()
+                .getStructArrayTopic("Pose Array", Pose3d.struct).publish();
+        arrayPublisher.set(poses);
+    }
+
+    public static void post2dPose(Pose2d... poses) {
+        StructArrayPublisher<Pose2d> arrayPublisher = NetworkTableInstance.getDefault()
+                .getStructArrayTopic("Pose Array", Pose2d.struct).publish();
+        arrayPublisher.set(poses);
+    }
+
+    public static void logPoint(Translation2d... points) {
+        StructArrayPublisher<Translation2d> publisher = NetworkTableInstance.getDefault()
+                .getStructArrayTopic("MyTranslations", Translation2d.struct).publish();
+        publisher.set(points);
+
+    }
+
+    public static void logSwerve(SwerveModuleState... states) {
+        StructArrayPublisher<SwerveModuleState> publisher = NetworkTableInstance.getDefault()
+                .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
+        publisher.set(states);
+
+    }
+
+    public static void logJoystickData() { // Still needs testing to verify its functionality
+        // Starts recording to data log
+        DataLogManager.start();
+        // Record both DS control and joystick data
+        DriverStation.startDataLog(DataLogManager.getLog());
+    }
+
 }

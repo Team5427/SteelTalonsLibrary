@@ -35,10 +35,10 @@ public class ConstrainedChassisSpeeds {
 
     public ChassisSpeeds getCalculatedSpeeds() {
         ChassisSpeeds calculatedSpeeds = new ChassisSpeeds(
-            xConstraint.isPresent() ? xConstraint.get(): constrainedSpeeds.vxMetersPerSecond,
-            yConstraint.isPresent() ? yConstraint.get(): constrainedSpeeds.vyMetersPerSecond,
-            rotationConstraint.isPresent() ? rotationConstraint.get().getRadians(): constrainedSpeeds.omegaRadiansPerSecond
-        );
+                xConstraint.isPresent() ? xConstraint.get() : constrainedSpeeds.vxMetersPerSecond,
+                yConstraint.isPresent() ? yConstraint.get() : constrainedSpeeds.vyMetersPerSecond,
+                rotationConstraint.isPresent() ? rotationConstraint.get().getRadians()
+                        : constrainedSpeeds.omegaRadiansPerSecond);
         return calculatedSpeeds;
     }
 
@@ -109,5 +109,35 @@ public class ConstrainedChassisSpeeds {
     public double getRotationConstraintAsDouble() {
         return rotationConstraint.get().getRadians();
     }
-    
+
+    public void adjustConstrainedChassisSpeeds(ConstrainedChassisSpeeds speeds) {
+        constrainedSpeeds.omegaRadiansPerSecond += speeds.constrainedSpeeds.omegaRadiansPerSecond;
+        constrainedSpeeds.vxMetersPerSecond += speeds.constrainedSpeeds.vxMetersPerSecond;
+        constrainedSpeeds.vyMetersPerSecond += speeds.constrainedSpeeds.vyMetersPerSecond;
+        if (speeds.xConstraint.isPresent()) {
+            xConstraint = Optional
+                    .of(xConstraint.isPresent()
+                            ? speeds.xConstraint.get().doubleValue() + xConstraint.get().doubleValue()
+                            : speeds.xConstraint.get().doubleValue());
+        }
+        if (speeds.yConstraint.isPresent()) {
+            yConstraint = Optional
+                    .of(yConstraint.isPresent()
+                            ? speeds.yConstraint.get().doubleValue() + yConstraint.get().doubleValue()
+                            : speeds.yConstraint.get().doubleValue());
+        }
+        if (speeds.rotationConstraint.isPresent()) {
+            rotationConstraint = Optional
+                    .of(Rotation2d.fromRadians(rotationConstraint.isPresent()
+                            ? speeds.rotationConstraint.get().getRadians() + rotationConstraint.get().getRadians()
+                            : speeds.rotationConstraint.get().getRadians()));
+        }
+    }
+
+    public void adjustConstrainedChassisSpeeds(ChassisSpeeds speeds) {
+        constrainedSpeeds.omegaRadiansPerSecond += speeds.omegaRadiansPerSecond;
+        constrainedSpeeds.vxMetersPerSecond += speeds.vxMetersPerSecond;
+        constrainedSpeeds.vyMetersPerSecond += speeds.vyMetersPerSecond;
+    }
+
 }
