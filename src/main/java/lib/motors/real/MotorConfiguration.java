@@ -1,4 +1,6 @@
-package lib.motors;
+package lib.motors.real;
+
+import com.ctre.phoenix6.sim.ChassisReference;
 
 import lib.drivers.ComplexGearRatio;
 
@@ -83,5 +85,5 @@ public class MotorConfiguration {
             return gearRatio.getMathematicalGearRatio() * finalDiameterMeters * Math.PI;
         return gearRatio.getMathematicalGearRatio() * 2 * Math.PI;
     }
-    
+
 }

@@ -1,31 +1,29 @@
-package lib.motors;
+package lib.motors.real;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import lib.drivers.CANDeviceId;
-import lib.motors.MotorConfiguration.IdleState;
-import lib.motors.MotorConfiguration.MotorMode;
+import lib.motors.IMotorController;
+import lib.motors.real.MotorConfiguration.IdleState;
+import lib.motors.real.MotorConfiguration.MotorMode;
 
-public class SimpleSparkMax implements IMotorController {
+public class ProfiledSparkMax implements IMotorController {
 
     private CANDeviceId id;
     private CANSparkMax sparkMax;
     private MotorConfiguration configuration;
     private RelativeEncoder relativeEncoder;
-    private SparkPIDController controller;
-
-    private ControlType controlType;
+    private ProfiledPIDController controller;
 
     private double setpoint;
 
-    public SimpleSparkMax(CANDeviceId id) {
+    public ProfiledSparkMax(CANDeviceId id) {
         this.id = id;
 
         sparkMax = new CANSparkMax(this.id.getDeviceNumber(), MotorType.kBrushless);
@@ -33,34 +31,26 @@ public class SimpleSparkMax implements IMotorController {
         relativeEncoder = sparkMax.getEncoder();
         relativeEncoder.setMeasurementPeriod(10);
 
-        controller = sparkMax.getPIDController();
+        controller = new ProfiledPIDController(0, 0, 0, null);
     }
 
     @Override
     public void apply(MotorConfiguration configuration) {
         this.configuration = configuration;
         sparkMax.setInverted(configuration.isInverted);
-        sparkMax.setIdleMode(configuration.idleState == IdleState.kBrake ? IdleMode.kBrake: IdleMode.kCoast);
-        
+        sparkMax.setIdleMode(configuration.idleState == IdleState.kBrake ? IdleMode.kBrake : IdleMode.kCoast);
+
         relativeEncoder.setPositionConversionFactor(configuration.unitConversionRatio);
         relativeEncoder.setVelocityConversionFactor(configuration.unitConversionRatio / 60.0);
-        
+
         controller.setP(configuration.kP);
         controller.setI(configuration.kI);
         controller.setD(configuration.kD);
-        controller.setFF(configuration.kFF);
+        controller.setConstraints(new TrapezoidProfile.Constraints(
+                configuration.maxVelocity, configuration.maxAcceleration));
 
-        switch (configuration.mode) {
-            case kFlywheel:
-                controlType = ControlType.kVelocity;
-                break;
-            case kServo:
-            case kLinear:
-                controlType = ControlType.kPosition;
-                break;
-            default:
-                controlType = ControlType.kVelocity;
-                break;
+        if (configuration.mode == MotorMode.kFlywheel) {
+            throw new Error("Profiled Spark Max of id " + id.getDeviceNumber() + " is set as an illegal flywheel.");
         }
 
         sparkMax.burnFlash();
@@ -69,16 +59,14 @@ public class SimpleSparkMax implements IMotorController {
     @Override
     public void setSetpoint(double setpoint) {
         this.setpoint = setpoint;
-        controller.setReference(this.setpoint, controlType);
+        sparkMax.setVoltage(
+                controller.calculate(getEncoderPosition(), this.setpoint) + configuration.kFF * this.setpoint);
     }
 
     public void setSetpoint(Rotation2d setpoint) {
         this.setpoint = setpoint.getRadians();
-        if (configuration.mode == MotorMode.kFlywheel) {
-            DriverStation.reportWarning(
-                "Simple Spark Max of id " + id.getDeviceNumber() + " of type flywheel was set with Rotation2d setpoint.", 
-                true);
-        }
+        sparkMax.setVoltage(
+                controller.calculate(getEncoderPosition(), this.setpoint) + configuration.kFF * this.setpoint);
     }
 
     @Override

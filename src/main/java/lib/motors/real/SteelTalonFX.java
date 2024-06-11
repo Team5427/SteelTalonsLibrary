@@ -1,4 +1,4 @@
-package lib.motors;
+package lib.motors.real;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
@@ -6,7 +6,8 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import lib.drivers.CANDeviceId;
-import lib.motors.MotorConfiguration.MotorMode;
+import lib.motors.IMotorController;
+import lib.motors.real.MotorConfiguration.MotorMode;
 
 public class SteelTalonFX implements IMotorController {
 
@@ -25,7 +26,7 @@ public class SteelTalonFX implements IMotorController {
         this.id = id;
 
         talonFX = new TalonFX(this.id.getDeviceNumber());
-        
+
         withFOC = false;
     }
 
@@ -116,5 +117,5 @@ public class SteelTalonFX implements IMotorController {
     public TalonFX getTalonFX() {
         return talonFX;
     }
-    
+
 }
