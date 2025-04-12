@@ -10,7 +10,7 @@ public class PilotingControls {
     joy = new CommandXboxController(DriverConstants.kDriverJoystickPort);
   }
 
-  public PilotingControls(CommandXboxController joy){
+  public PilotingControls(CommandXboxController joy) {
     this.joy = joy;
   }
 }

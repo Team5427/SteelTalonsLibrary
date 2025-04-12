@@ -7,7 +7,6 @@ import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
-import team5427.lib.motors.real.MotorConfiguration;
 
 public interface IMotorController {
 
@@ -15,17 +14,25 @@ public interface IMotorController {
 
   public MotorConfiguration getMotorConfiguration();
 
-  public default double getSetpoint(){return 0.0;}
+  public default double getSetpoint() {
+    return 0.0;
+  }
 
   public void setEncoderPosition(double position);
 
   public void setEncoderPosition(Rotation2d position);
 
-  public default double getEncoderPosition(){return 0.0;}
+  public default double getEncoderPosition() {
+    return 0.0;
+  }
 
-  public default double getEncoderVelocity(){return 0.0;}
+  public default double getEncoderVelocity() {
+    return 0.0;
+  }
 
-  public default double getError(){return 0.0;}
+  public default double getError() {
+    return 0.0;
+  }
 
   public void setRawPercentage(double percentage);
 
@@ -33,7 +40,7 @@ public interface IMotorController {
 
   public void setRawVoltage(Voltage voltage);
 
-  public default void setRawCurrent(Current current){}
+  public default void setRawCurrent(Current current) {}
 
   public void setSetpoint(Distance distance);
 

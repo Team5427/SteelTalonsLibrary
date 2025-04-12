@@ -10,7 +10,7 @@ public class OperatorControls {
     joy = new CommandXboxController(DriverConstants.kOperatorJoystickPort);
   }
 
-  public OperatorControls(CommandXboxController joy){
+  public OperatorControls(CommandXboxController joy) {
     this.joy = joy;
   }
 }

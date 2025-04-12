@@ -1,4 +1,4 @@
-package team5427.lib.motors.real;
+package team5427.lib.motors;
 
 import team5427.lib.drivers.ComplexGearRatio;
 

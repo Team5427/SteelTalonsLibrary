@@ -1,4 +1,4 @@
-package team5427.lib.motors.real;
+package team5427.lib.motors;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase;
@@ -18,9 +18,8 @@ import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import team5427.lib.drivers.CANDeviceId;
-import team5427.lib.motors.IMotorController;
-import team5427.lib.motors.real.MotorConfiguration.IdleState;
-import team5427.lib.motors.real.MotorConfiguration.MotorMode;
+import team5427.lib.motors.MotorConfiguration.IdleState;
+import team5427.lib.motors.MotorConfiguration.MotorMode;
 
 public class SimpleSparkFlex implements IMotorController {
 
@@ -93,6 +92,7 @@ public class SimpleSparkFlex implements IMotorController {
 
     sparkFlex.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
   }
+
   /*
    * Function now uses rotations inside rather than radians
    */
