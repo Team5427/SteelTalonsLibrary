@@ -11,6 +11,11 @@ import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import team5427.lib.drivers.CANDeviceId;
 import team5427.lib.motors.IMotorController;
@@ -87,49 +92,7 @@ public class SimpleSparkFlex implements IMotorController {
     }
 
     sparkFlex.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-
-    // sparkMax.burnFlash();
-    // sparkFlex.setInverted(configuration.isInverted);
-    // sparkFlex.setIdleMode(configuration.idleState == IdleState.kBrake ? IdleMode.kBrake :
-    // IdleMode.kCoast);
-
-    // relativeEncoder.setPositionConversionFactor(configuration.unitConversionRatio);
-    // relativeEncoder.setVelocityConversionFactor(configuration.unitConversionRatio / 60.0);
-
-    // controller.setP(configuration.kP);
-    // controller.setI(configuration.kI);
-    // controller.setD(configuration.kD);
-    // controller.setFF(configuration.kFF);
-
-    // switch (configuration.mode) {
-    //     case kFlywheel:
-    //         controlType = CANSparkBase.ControlType.kVelocity;
-    //         break;
-    //     case kServo:
-    //     case kLinear:
-    //         controlType = CANSparkBase.ControlType.kPosition;
-    //         controller.setPositionPIDWrappingEnabled(true);
-    //         controller.setPositionPIDWrappingMinInput(-Math.PI);
-    //         controller.setPositionPIDWrappingMaxInput(Math.PI);
-    //         break;
-    //     default:
-    //         controlType = CANSparkBase.ControlType.kVelocity;
-    //         break;
-    // }
-
-    // sparkFlex.burnFlash();
   }
-
-  /**
-   * @param setpoint needs to be in meters if a flywheel or linear, or rotations if a servo
-   * @apiNote If the device is a servo, it is recommended to use Rotation2d, rather than a double
-   */
-  @Override
-  public void setSetpoint(double setpoint) {
-    this.setpoint = setpoint;
-    controller.setReference(this.setpoint, controlType);
-  }
-
   /*
    * Function now uses rotations inside rather than radians
    */
@@ -193,7 +156,7 @@ public class SimpleSparkFlex implements IMotorController {
   }
 
   @Override
-  public void setRawVoltage(double voltage) {
+  public void setRawVoltage(Voltage voltage) {
     sparkFlex.setVoltage(voltage);
   }
 
@@ -216,5 +179,29 @@ public class SimpleSparkFlex implements IMotorController {
   @Override
   public MotorConfiguration getMotorConfiguration() {
     return this.configuration;
+  }
+
+  @Override
+  public void setSetpoint(Distance distance) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setSetpoint'");
+  }
+
+  @Override
+  public void setSetpoint(LinearVelocity velocity) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setSetpoint'");
+  }
+
+  @Override
+  public void setSetpoint(AngularVelocity velocity) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setSetpoint'");
+  }
+
+  @Override
+  public void setSetpoint(Angle angle) {
+    // TODO Auto-generated method stub
+    throw new UnsupportedOperationException("Unimplemented method 'setSetpoint'");
   }
 }

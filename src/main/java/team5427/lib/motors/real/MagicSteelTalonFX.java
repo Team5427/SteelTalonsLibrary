@@ -1,9 +1,12 @@
 package team5427.lib.motors.real;
 
 import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Meter;
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Volt;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -24,6 +27,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularAcceleration;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Voltage;
 import edu.wpi.first.wpilibj.DriverStation;
 import team5427.lib.drivers.CANDeviceId;
 import team5427.lib.motors.IMotorController;
@@ -34,10 +41,6 @@ public class MagicSteelTalonFX implements IMotorController {
   private CANDeviceId id;
   private TalonFX talonFX;
   private MotorConfiguration configuration;
-
-  // private double positionConversionFactor;
-  // // This is Radians/Second
-  // private double velocityConversionFactor;
 
   private double setpoint;
 
@@ -63,18 +66,12 @@ public class MagicSteelTalonFX implements IMotorController {
     talonFX = new TalonFX(this.id.getDeviceNumber(), this.id.getBus());
 
     withFOC = false;
-
-    // position = talonFX.getPosition();
-    // velocity = talonFX.getVelocity();
   }
 
   @Override
   public void apply(MotorConfiguration configuration) {
     this.configuration = configuration;
     talonConfig = new TalonFXConfiguration();
-
-    // positionConversionFactor = configuration.unitConversionRatio;
-    // velocityConversionFactor = configuration.unitConversionRatio / 60.0;
 
     talonConfig.Feedback.SensorToMechanismRatio =
         configuration.gearRatio.getSensorToMechanismRatio();
@@ -134,77 +131,6 @@ public class MagicSteelTalonFX implements IMotorController {
     talonFX.getConfigurator().apply(talonConfig);
   }
 
-  // /**
-  // * @param setpoint - Rotation2d
-  // **/
-  // @Override
-  // public void setSetpoint(Rotation2d setpoint) {
-  // switch (configuration.mode) {
-  // case kFlywheel:
-  // talonFX.setControl(new
-  // VelocityVoltage(setpoint.getRotations()).withEnableFOC(withFOC));
-  // break;
-  // case kServo:
-  // case kLinear:
-  // talonFX.setControl(new
-  // PositionVoltage(setpoint.getRotations()).withEnableFOC(withFOC));
-  // break;
-  // default:
-  // talonFX.setControl(new
-  // VelocityVoltage(setpoint.getRotations()).withEnableFOC(withFOC));
-  // break;
-  // }
-  // }
-  /**
-   * @param setpoint - Rotation2d Flywheel: Rotation2d per Second Servo: Rotation2d Linear:
-   *     Rotation2d
-   */
-  @Override
-  public void setSetpoint(Rotation2d setpoint) {
-    switch (configuration.mode) {
-      case kFlywheel:
-        this.setpoint = setpoint.getRotations();
-        if (isUsingTorqueCurrentFOC()) {
-          talonFX.setControl(
-              velocityTorqueCurrentFOCRequest.withVelocity(
-                  RotationsPerSecond.of(setpoint.getRotations())));
-        } else {
-          talonFX.setControl(
-              velocityVoltageRequest
-                  .withVelocity(RotationsPerSecond.of(setpoint.getRotations()))
-                  .withEnableFOC(withFOC));
-        }
-        break;
-      case kServo:
-      case kLinear:
-        this.setpoint = setpoint.getRotations();
-        // Logger.recordOutput("Setpoint Of Steer" + talonFX.getDeviceID(), setpoint.getDegrees());
-        if (isUsingTorqueCurrentFOC()) {
-          talonFX.setControl(
-              positionTorqueCurrentFOCRequest.withPosition(Rotation.of(setpoint.getRotations())));
-        } else {
-
-          talonFX.setControl(
-              positionDutyCycleRequest
-                  .withPosition(Rotation.of(setpoint.getRotations()))
-                  .withEnableFOC(withFOC));
-        }
-        break;
-      default:
-        this.setpoint = setpoint.getRotations();
-        talonFX.setControl(
-            velocityVoltageRequest
-                .withVelocity(RotationsPerSecond.of(setpoint.getRotations()))
-                .withEnableFOC(withFOC));
-        break;
-    }
-  }
-
-  @Override
-  public double getSetpoint() {
-    return setpoint;
-  }
-
   @Override
   public void setEncoderPosition(double position) {
     talonFX.setPosition(position);
@@ -218,79 +144,59 @@ public class MagicSteelTalonFX implements IMotorController {
   /**
    * @return rotations if a servo, or meters if a flywheel or linear
    */
-  @Override
-  public double getEncoderPosition() {
-
-    // if (configuration.mode != MotorMode.kServo) {
-    // // converts to meters
-    // return position.getValue().in(Rotation) * Math.PI *
-    // configuration.finalDiameterMeters;
-    // }
-    // return position.getValueAsDouble();
-    return 0;
-  }
-
-  /**
-   * @return rotations if a servo, or meters if a flywheel or linear
-   */
   public double getEncoderPosition(StatusSignal<Angle> position) {
 
-    if (configuration.mode != MotorMode.kServo) {
-      // converts to meters
-      return position.getValue().in(Rotation) * Math.PI * configuration.finalDiameterMeters;
-    }
-    return position.getValueAsDouble();
-  }
-
-  // public void updateStatusSignals() {
-  // BaseStatusSignal.refreshAll(position, velocity);
-  // }
-
-  /**
-   * @return rotations per minute if a servo, meters per second if a linear or flywheel
-   */
-  @Override
-  public double getEncoderVelocity() {
-    // if (configuration.mode != MotorMode.kServo) {
-    // // converts to meters
-    // // BaseStatusSignal.refreshAll(talonFX.getPosition());
-    // return velocity.getValue().in(RotationsPerSecond)
-    // * Math.PI
-    // * configuration.finalDiameterMeters;
-    // }
-    // // converts to RPM
-    // return velocity.getValue().in(RotationsPerSecond) * 60.0;
-    return 0;
+    return position.getValue().in(Rotation) * getConversionFactorFromRotations();
   }
 
   /**
    * @return rotations per minute if a servo, meters per second if a linear or flywheel
    */
   public double getEncoderVelocity(StatusSignal<AngularVelocity> velocity) {
-    if (configuration.mode != MotorMode.kServo) {
-      // converts to meters
-      // BaseStatusSignal.refreshAll(talonFX.getPosition());
       return velocity.getValue().in(RotationsPerSecond)
-          * Math.PI
-          * configuration.finalDiameterMeters;
-    }
-    // converts to RPM
-    return velocity.getValue().in(RotationsPerSecond) * 60.0;
+          * getConversionFactorFromRotations() * (configuration.mode == MotorMode.kFlywheel ? 60.0: 1.0);
   }
 
   /**
    * @return rotations per minute^2 if a servo, meters per second^2 if a linear or flywheel
    */
   public double getEncoderAcceleration(StatusSignal<AngularAcceleration> acceleration) {
-    if (configuration.mode != MotorMode.kServo) {
-      // converts to meters
-      // BaseStatusSignal.refreshAll(talonFX.getPosition());
       return acceleration.getValue().in(RotationsPerSecondPerSecond)
-          * Math.PI
-          * configuration.finalDiameterMeters;
+          * getConversionFactorFromRotations() * (configuration.mode == MotorMode.kFlywheel ? 60.0: 1.0);
+  }
+
+  /**
+   * Conversion factors are calculated without the gear ratio (but with wheel final diameter if linear or flywheel)
+   * Gear ratios are applied automatically by talonfx
+   * @return Flywheel - returns m/s -> rotations/s
+   * Linear - returns m -> rotations
+   * Servo - returns rotations -> rotations
+   * 
+   * This also applies to the integrals and derivatives of these units (ie. m/s -> m OR m/s -> m/s^2)
+   */
+  public double getConversionFactorToRotations(){
+    switch (configuration.mode) {
+      case kLinear:
+      case kFlywheel:
+        return 1.0 / (Math.PI * configuration.finalDiameterMeters);
+      case kServo:
+        return 1.0;
+      default:
+        return 1.0;
     }
-    // converts to RPM
-    return acceleration.getValue().in(RotationsPerSecondPerSecond) * 60.0;
+  }
+
+  /**
+   * Conversion factors are calculated without the gear ratio (but with wheel final diameter if linear or flywheel)
+   * Gear ratios are applied automatically by talonfx
+   * @return Flywheel - returns rotations/s -> m/s
+   * Linear - returns rotations -> m
+   * Servo - returns rotations -> rotations
+   * 
+   * This also applies to the integrals and derivatives of these units (ie. m/s -> m OR m/s -> m/s^2)
+   */
+  public double getConversionFactorFromRotations(){
+    return 1.0 / getConversionFactorToRotations();
   }
 
   @Override
@@ -304,18 +210,17 @@ public class MagicSteelTalonFX implements IMotorController {
   }
 
   @Override
-  public void setRawVoltage(double voltage) {
-    talonFX.setVoltage(voltage);
+  public void setRawVoltage(Voltage voltage) {
+    talonFX.setVoltage(voltage.in(Volt));
+  }
+
+  public void setRawCurrent(Current current){
+    talonFX.setControl(torqueCurrentFOCRequest.withOutput(current));
   }
 
   @Override
   public double getError() {
     return talonFX.getClosedLoopError().refresh().getValue();
-
-    // if (configuration.mode == MotorMode.kFlywheel) {
-    // return setpoint - getEncoderVelocity();
-    // }
-    // return setpoint - getEncoderPosition();
   }
 
   public void setFOC(boolean foc) {
@@ -326,45 +231,6 @@ public class MagicSteelTalonFX implements IMotorController {
     return talonFX;
   }
 
-  /**
-   * @param setpoint Flywheel - m/s Linear - meters Servo - Rotations
-   */
-  @Override
-  public void setSetpoint(double setpoint) {
-    this.setpoint = setpoint;
-    switch (configuration.mode) {
-        // maybe its * instead of /
-      case kFlywheel:
-        this.setpoint = setpoint / (Math.PI * configuration.finalDiameterMeters);
-        talonFX.setControl(new VelocityVoltage(this.setpoint).withEnableFOC(withFOC));
-        break;
-      case kServo:
-        this.setpoint = setpoint;
-        talonFX.setControl(new PositionVoltage(setpoint).withEnableFOC(withFOC));
-        DriverStation.reportWarning(
-            "Warning: TalonFX motor with the id "
-                + talonFX.getDeviceID()
-                + " is a Servo set with a double setpoint./n Use Rotation2d instead.",
-            false);
-      case kLinear:
-        this.setpoint = setpoint / (Math.PI * configuration.finalDiameterMeters);
-        talonFX.setControl(new PositionDutyCycle(this.setpoint).withEnableFOC(withFOC));
-        break;
-      default:
-        this.setpoint = setpoint;
-        talonFX.setControl(new VelocityVoltage(setpoint).withEnableFOC(withFOC));
-        break;
-    }
-  }
-
-  // /**
-  // *
-  // @param setpoint - Radians setpoint
-  // */
-  // @Override
-  // public void setSetpoint(double setpoint) {
-  // setSetpoint(new Rotation2d(setpoint));
-  // }
   @Override
   public MotorConfiguration getMotorConfiguration() {
     return this.configuration;
@@ -376,5 +242,74 @@ public class MagicSteelTalonFX implements IMotorController {
 
   public void useTorqueCurrentFOC(boolean using) {
     this.useTorqueCurrentFOC = using;
+  }
+
+  @Override
+  public void setSetpoint(Distance distance) {
+    this.setpoint = distance.in(Meter);
+    switch (configuration.mode) {
+      case kLinear:
+        this.setpoint*=getConversionFactorToRotations();
+        talonFX.setControl(isUsingTorqueCurrentFOC() ? positionTorqueCurrentFOCRequest.withPosition(this.setpoint) : positionDutyCycleRequest.withPosition(setpoint).withEnableFOC(withFOC));
+        break;
+      default:
+        DriverStation.reportWarning("MagicSteelTalonFX: id " + id.getDeviceNumber() + " in bus " + id.getBus() + " using Distance setpoint on a non-linear motor", false);
+        break;
+    }
+  }
+
+  @Override
+  public void setSetpoint(LinearVelocity velocity) {
+    this.setpoint = velocity.in(MetersPerSecond);
+    switch (configuration.mode) {
+      case kFlywheel:
+        this.setpoint*=getConversionFactorToRotations();
+        talonFX.setControl(isUsingTorqueCurrentFOC() ? velocityTorqueCurrentFOCRequest.withVelocity(this.setpoint) : velocityVoltageRequest.withVelocity(setpoint).withEnableFOC(withFOC));
+        break;
+      default:
+        DriverStation.reportWarning("MagicSteelTalonFX: id " + id.getDeviceNumber() + " in bus " + id.getBus() + " using LinearVelocity setpoint on a non-flywheel motor", false);
+        break;
+    }
+  }
+
+  @Override
+  public void setSetpoint(AngularVelocity velocity) {
+    this.setpoint = velocity.in(RotationsPerSecond);
+    switch (configuration.mode) {
+      case kFlywheel:
+        talonFX.setControl(isUsingTorqueCurrentFOC() ? velocityTorqueCurrentFOCRequest.withVelocity(this.setpoint) : velocityVoltageRequest.withVelocity(setpoint).withEnableFOC(withFOC));
+        break;
+      default:
+        DriverStation.reportWarning("MagicSteelTalonFX: id " + id.getDeviceNumber() + " in bus " + id.getBus() + " using AngularVelocity setpoint on a non-flywheel motor", false);
+        break;
+    }
+  }
+
+  @Override
+  public void setSetpoint(Angle angle) {
+    this.setpoint = angle.in(Rotation);
+    switch (configuration.mode) {
+      case kServo:
+        this.setpoint*=getConversionFactorToRotations();
+        talonFX.setControl(isUsingTorqueCurrentFOC() ? positionTorqueCurrentFOCRequest.withPosition(this.setpoint) : positionDutyCycleRequest.withPosition(setpoint).withEnableFOC(withFOC));
+        break;
+      default:
+        DriverStation.reportWarning("MagicSteelTalonFX: id " + id.getDeviceNumber() + " in bus " + id.getBus() + " using Angle setpoint on a non-servo motor", false);
+        break;
+    }
+  }
+
+  @Override
+  public void setSetpoint(Rotation2d angle) {
+    this.setpoint = angle.getRotations();
+    switch (configuration.mode) {
+      case kServo:
+        this.setpoint*=getConversionFactorToRotations();
+        talonFX.setControl(isUsingTorqueCurrentFOC() ? positionTorqueCurrentFOCRequest.withPosition(this.setpoint) : positionDutyCycleRequest.withPosition(setpoint).withEnableFOC(withFOC));
+        break;
+      default:
+      DriverStation.reportWarning("MagicSteelTalonFX: id " + id.getDeviceNumber() + " in bus " + id.getBus() + " using Rotation2d setpoint on a non-servo motor", false);
+        break;
+    }
   }
 }
