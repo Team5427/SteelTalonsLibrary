@@ -5,6 +5,7 @@
 package team5427.frc.robot;
 
 import com.ctre.phoenix6.CANBus;
+import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -36,6 +37,8 @@ public final class Constants {
   public static final double kLoopSpeed = Units.millisecondsToSeconds(20);
 
   public static final boolean kIsTuningMode = false;
+
+  public static RobotConfig config;
 
   public static class DriverConstants {
     public static final int kDriverJoystickPort = 0;

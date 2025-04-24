@@ -58,7 +58,8 @@ public class SteelTalonFX implements IMotorController {
       new VelocityTorqueCurrentFOC(RotationsPerSecond.of(0.0));
   public VoltageOut voltageOut = new VoltageOut(Volt.of(0.0));
   private boolean useTorqueCurrentFOC = false;
-  private boolean usePositionVoltage = false;
+
+  // private boolean usePositionVoltage = false;
 
   public SteelTalonFX(CANDeviceId id) {
     this.id = id;
@@ -121,9 +122,6 @@ public class SteelTalonFX implements IMotorController {
     talonConfig.CurrentLimits.StatorCurrentLimit = configuration.currentLimit;
     talonConfig.CurrentLimits.SupplyCurrentLimit = configuration.currentLimit * 0.5;
 
-    talonConfig.MotionMagic.MotionMagicCruiseVelocity = configuration.maxVelocity;
-    talonConfig.MotionMagic.MotionMagicAcceleration = configuration.maxAcceleration;
-
     talonConfig.TorqueCurrent.PeakForwardTorqueCurrent = configuration.currentLimit;
     talonConfig.TorqueCurrent.PeakReverseTorqueCurrent = -configuration.currentLimit;
     talonFX.getConfigurator().apply(talonConfig);
@@ -158,7 +156,7 @@ public class SteelTalonFX implements IMotorController {
   public double getEncoderVelocity(StatusSignal<AngularVelocity> velocity) {
     return velocity.getValue().in(RotationsPerSecond)
         * getConversionFactorFromRotations()
-        * (configuration.mode == MotorMode.kFlywheel ? 60.0 : 1.0);
+        * (configuration.mode == MotorMode.kServo ? 60.0 : 1.0);
   }
 
   /**
@@ -167,7 +165,7 @@ public class SteelTalonFX implements IMotorController {
   public double getEncoderAcceleration(StatusSignal<AngularAcceleration> acceleration) {
     return acceleration.getValue().in(RotationsPerSecondPerSecond)
         * getConversionFactorFromRotations()
-        * (configuration.mode == MotorMode.kFlywheel ? 60.0 : 1.0);
+        * (configuration.mode == MotorMode.kServo ? 60.0 : 1.0);
   }
 
   /**
@@ -249,7 +247,7 @@ public class SteelTalonFX implements IMotorController {
         break;
       default:
         DriverStation.reportWarning(
-            "MagicSteelTalonFX: id "
+            "SteelTalonFX: id "
                 + id.getDeviceNumber()
                 + " in bus "
                 + id.getBus()
@@ -272,7 +270,7 @@ public class SteelTalonFX implements IMotorController {
         break;
       default:
         DriverStation.reportWarning(
-            "MagicSteelTalonFX: id "
+            "SteelTalonFX: id "
                 + id.getDeviceNumber()
                 + " in bus "
                 + id.getBus()
@@ -294,7 +292,7 @@ public class SteelTalonFX implements IMotorController {
         break;
       default:
         DriverStation.reportWarning(
-            "MagicSteelTalonFX: id "
+            "SteelTalonFX: id "
                 + id.getDeviceNumber()
                 + " in bus "
                 + id.getBus()
@@ -317,7 +315,7 @@ public class SteelTalonFX implements IMotorController {
         break;
       default:
         DriverStation.reportWarning(
-            "MagicSteelTalonFX: id "
+            "SteelTalonFX: id "
                 + id.getDeviceNumber()
                 + " in bus "
                 + id.getBus()
@@ -340,7 +338,7 @@ public class SteelTalonFX implements IMotorController {
         break;
       default:
         DriverStation.reportWarning(
-            "MagicSteelTalonFX: id "
+            "SteelTalonFX: id "
                 + id.getDeviceNumber()
                 + " in bus "
                 + id.getBus()
@@ -348,6 +346,10 @@ public class SteelTalonFX implements IMotorController {
             false);
         break;
     }
+  }
+
+  public void applyTalonConfig() {
+    talonFX.getConfigurator().apply(this.talonConfig);
   }
 
   @Override
@@ -363,11 +365,11 @@ public class SteelTalonFX implements IMotorController {
     this.useTorqueCurrentFOC = using;
   }
 
-  public boolean isUsingPositionVoltage() {
-    return this.usePositionVoltage;
-  }
+  // public boolean isUsingPositionVoltage() {
+  //   return this.usePositionVoltage;
+  // }
 
-  public void usePositionVoltage(boolean using) {
-    this.usePositionVoltage = using;
-  }
+  // public void usePositionVoltage(boolean using) {
+  //   this.usePositionVoltage = using;
+  // }
 }

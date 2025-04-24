@@ -151,7 +151,7 @@ public class MagicSteelTalonFX implements IMotorController {
   public double getEncoderVelocity(StatusSignal<AngularVelocity> velocity) {
     return velocity.getValue().in(RotationsPerSecond)
         * getConversionFactorFromRotations()
-        * (configuration.mode == MotorMode.kFlywheel ? 60.0 : 1.0);
+        * (configuration.mode == MotorMode.kServo ? 60.0 : 1.0);
   }
 
   /**
@@ -160,7 +160,7 @@ public class MagicSteelTalonFX implements IMotorController {
   public double getEncoderAcceleration(StatusSignal<AngularAcceleration> acceleration) {
     return acceleration.getValue().in(RotationsPerSecondPerSecond)
         * getConversionFactorFromRotations()
-        * (configuration.mode == MotorMode.kFlywheel ? 60.0 : 1.0);
+        * (configuration.mode == MotorMode.kServo ? 60.0 : 1.0);
   }
 
   /**

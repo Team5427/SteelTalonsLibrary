@@ -107,6 +107,7 @@ public class Robot extends LoggedRobot {
 
     CommandScheduler.getInstance().run();
     VirtualSubsystem.periodicAll();
+    RobotState.getInstance().log();
 
     // Return to normal thread priority
     // Threads.setCurrentThreadPriority(false, 10);
@@ -172,5 +173,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    m_robotContainer.updateSimulation();
+  }
 }
