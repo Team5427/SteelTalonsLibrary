@@ -51,4 +51,8 @@ public interface IMotorController {
   public void setSetpoint(Rotation2d angle);
 
   public void setSetpoint(Angle angle);
+
+  public double getConversionFactorFromRotations();
+
+  public double getConversionFactorToRotations();
 }

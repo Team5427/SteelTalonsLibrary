@@ -177,6 +177,7 @@ public class SteelTalonFX implements IMotorController {
    *     <p>This also applies to the integrals and derivatives of these units (ie. m/s -> m OR m/s
    *     -> m/s^2)
    */
+  @Override
   public double getConversionFactorToRotations() {
     switch (configuration.mode) {
       case kLinear:
@@ -198,6 +199,7 @@ public class SteelTalonFX implements IMotorController {
    *     <p>This also applies to the integrals and derivatives of these units (ie. m/s -> m OR m/s
    *     -> m/s^2)
    */
+  @Override
   public double getConversionFactorFromRotations() {
     return 1.0 / getConversionFactorToRotations();
   }
@@ -364,12 +366,4 @@ public class SteelTalonFX implements IMotorController {
   public void useTorqueCurrentFOC(boolean using) {
     this.useTorqueCurrentFOC = using;
   }
-
-  // public boolean isUsingPositionVoltage() {
-  //   return this.usePositionVoltage;
-  // }
-
-  // public void usePositionVoltage(boolean using) {
-  //   this.usePositionVoltage = using;
-  // }
 }

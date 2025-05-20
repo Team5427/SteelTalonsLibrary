@@ -4,18 +4,15 @@
 
 package team5427.frc.robot;
 
+import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.ironmaple.simulation.SimulatedArena;
-import org.ironmaple.simulation.gamepieces.GamePieceOnFieldSimulation;
-import org.ironmaple.simulation.gamepieces.GamePieceOnFieldSimulation.GamePieceInfo;
 import org.littletonrobotics.junction.Logger;
-
-import com.pathplanner.lib.config.RobotConfig;
-
 import team5427.frc.robot.io.PilotingControls;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
+import team5427.frc.robot.subsystems.vision.QuestNav;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -28,9 +25,9 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    try{
-    Constants.config = RobotConfig.fromGUISettings();
-    } catch(Exception e){
+    try {
+      Constants.config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
       System.out.println("Robot Config not loading from GUI Settings");
       e.printStackTrace();
       return;
@@ -48,11 +45,12 @@ public class RobotContainer {
         SimulatedArena.getInstance()
             .addDriveTrainSimulation(SwerveSubsystem.getInstance().getKDriveSimulation());
         SimulatedArena.getInstance().clearGamePieces();
-        
+
         break;
       default:
         break;
     }
+    QuestNav.getInstance().setPose(new Pose2d(10 * Math.random(), 4, Rotation2d.kZero));
     buttonBindings();
   }
 
@@ -70,21 +68,27 @@ public class RobotContainer {
     return null;
   }
 
-   public void resetSimulationField() {
-        if (Constants.currentMode != Constants.Mode.SIM) return;
+  public void resetSimulationField() {
+    if (Constants.currentMode != Constants.Mode.SIM) return;
+    Pose2d pose = new Pose2d(3, 3, new Rotation2d());
 
-        SwerveSubsystem.getInstance().getKDriveSimulation().setSimulationWorldPose(new Pose2d(3, 3, new Rotation2d()));
-        SimulatedArena.getInstance().resetFieldForAuto();
-    }
+    SwerveSubsystem.getInstance()
+        .getKDriveSimulation()
+        .setSimulationWorldPose(pose);
+    RobotState.getInstance().resetAllPose(pose);
+    SimulatedArena.getInstance().resetFieldForAuto();
+  }
 
-    public void updateSimulation() {
-        if (Constants.currentMode != Constants.Mode.SIM) return;
+  public void updateSimulation() {
+    if (Constants.currentMode != Constants.Mode.SIM) return;
 
-        SimulatedArena.getInstance().simulationPeriodic();
-        Logger.recordOutput("FieldSimulation/RobotPosition", SwerveSubsystem.getInstance().getKDriveSimulation().getSimulatedDriveTrainPose());
-        Logger.recordOutput(
-                "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
-        Logger.recordOutput(
-                "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
-    }
+    SimulatedArena.getInstance().simulationPeriodic();
+    Logger.recordOutput(
+        "FieldSimulation/RobotPosition",
+        SwerveSubsystem.getInstance().getKDriveSimulation().getSimulatedDriveTrainPose());
+    Logger.recordOutput(
+        "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
+    Logger.recordOutput(
+        "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+  }
 }

@@ -1,10 +1,21 @@
 package team5427.frc.robot;
 
 import com.pathplanner.lib.commands.FollowPathCommand;
+
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.BuildConstants;
+
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
+import org.apache.commons.math3.util.MathUtils;
 import org.littletonrobotics.junction.AutoLogOutputManager;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -12,9 +23,13 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import team5427.frc.robot.subsystems.vision.QuestNav;
+import team5427.lib.detection.tuples.Tuple3Plus;
 // import team5427.frc.robot.subsystems.ProngEffector.ProngSubsystem;
 import team5427.lib.drivers.SteelTalonsLogger;
 import team5427.lib.drivers.VirtualSubsystem;
+import team5427.lib.kinematics.shooter.projectiles.parabolic.AdjustedParabolic;
+import team5427.lib.kinematics.shooter.projectiles.parabolic.AdjustedParabolicThread;
 
 // import frc.robot.BuildConstants;
 
@@ -85,6 +100,9 @@ public class Robot extends LoggedRobot {
     m_robotContainer = new RobotContainer();
 
     FollowPathCommand.warmupCommand().schedule();
+    AdjustedParabolicThread.getInstance().setShouldCompute(true);
+    AdjustedParabolicThread.getInstance().start();
+    
   }
 
   /**
@@ -108,7 +126,16 @@ public class Robot extends LoggedRobot {
     CommandScheduler.getInstance().run();
     VirtualSubsystem.periodicAll();
     RobotState.getInstance().log();
-
+    QuestNav.getInstance().processHeartbeat();
+    QuestNav.getInstance().cleanupResponses();
+    Translation3d target = new Pose3d(RobotState.getInstance().getEstimatedPose()).getTranslation();
+    
+    AdjustedParabolicThread.getInstance().setTarget(target);
+    
+    Logger.recordOutput("Rotation Output: " , MathUtil.inputModulus( AdjustedParabolicThread.getInstance().getOutputState().r.getDegrees(), 0, 360));
+    Logger.recordOutput("Velocity Output: ", new Translation2d(AdjustedParabolicThread.getInstance().getOutputState().t.in(MetersPerSecond), AdjustedParabolicThread.getInstance().getOutputState().a.in(MetersPerSecond)));
+    Logger.recordOutput("Target", target);
+    Logger.recordOutput("Thread Interupted", AdjustedParabolicThread.interrupted());
     // Return to normal thread priority
     // Threads.setCurrentThreadPriority(false, 10);
   }
@@ -169,7 +196,9 @@ public class Robot extends LoggedRobot {
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+    m_robotContainer.resetSimulationField();
+  }
 
   /** This function is called periodically whilst in simulation. */
   @Override

@@ -1,9 +1,8 @@
-package team5427.frc.robot.subsystems.Swerve.io;
+package team5427.frc.robot.subsystems.Swerve.io.talon;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import java.util.Queue;
-import team5427.frc.robot.subsystems.Swerve.PhoenixOdometryThread;
-import team5427.frc.robot.subsystems.Swerve.SwerveConstants;
+import team5427.frc.robot.subsystems.Swerve.io.ModuleIO.ModuleIOInputs;
 
 public class ModuleIOTalonFXReal extends ModuleIOTalonFX {
   // Queue to read inputs from odometry thread
@@ -31,7 +30,7 @@ public class ModuleIOTalonFXReal extends ModuleIOTalonFX {
     inputs.odometryDrivePositionsMeters =
         drivePositionQueue.stream()
             // converts the raw rotations -> radians -> meters
-            .mapToDouble((Double value) -> value * Math.PI * SwerveConstants.kWheelDiameterMeters)
+            .mapToDouble((Double value) -> value * driveMotor.getConversionFactorFromRotations())
             .toArray();
     inputs.odometryTurnPositions =
         steerPositionQueue.stream()

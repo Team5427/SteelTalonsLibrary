@@ -196,20 +196,31 @@ public final class PhoenixUtil {
         // Disable CanCoder inversion
         .withEncoderInverted(false)
         // Adjust steer motor PID gains for simulation
-          .withSteerMotorGains(new Slot0Configs()
-                        .withKP(60)
-                        .withKI(0)
-                        .withKD(6.5)
-                        .withKS(0)
-                        .withKV(1.91)
-                        .withKA(0)
-                        .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign))
-        .withDriveMotorGains(new Slot0Configs().withKP(2.5).withKI(0.0).withKD(0.0).withKV(1.524).withKA(25.5).withKS(0.0).withKG(0.0))
-        .withSteerMotorGearRatio(SwerveConstants.kSteerMotorConfiguration.gearRatio.getSensorToMechanismRatio())
+        .withSteerMotorGains(
+            new Slot0Configs()
+                .withKP(60)
+                .withKI(0)
+                .withKD(6.5)
+                .withKS(0)
+                .withKV(1.91)
+                .withKA(0)
+                .withStaticFeedforwardSign(StaticFeedforwardSignValue.UseClosedLoopSign))
+        .withDriveMotorGains(
+            new Slot0Configs()
+                .withKP(2.5)
+                .withKI(0.0)
+                .withKD(0.0)
+                .withKV(1.524)
+                .withKA(25.5)
+                .withKS(0.0)
+                .withKG(0.0))
+        .withSteerMotorGearRatio(
+            SwerveConstants.kSteerMotorConfiguration.gearRatio.getSensorToMechanismRatio())
         // Adjust friction voltages
         .withDriveFrictionVoltage(SwerveConstants.kDriveFrictionVoltage)
         .withSteerFrictionVoltage(SwerveConstants.kSteerFrictionVoltage)
         // Adjust steer inertia
-        .withSteerInertia(SwerveConstants.kSteerInertia).withDriveInertia(SwerveConstants.kDriveInertia);
+        .withSteerInertia(SwerveConstants.kSteerInertia)
+        .withDriveInertia(SwerveConstants.kDriveInertia);
   }
 }

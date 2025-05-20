@@ -14,6 +14,7 @@ import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
 import team5427.frc.robot.subsystems.Swerve.SwerveConstants;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
+import team5427.frc.robot.subsystems.vision.QuestNav;
 import team5427.lib.detection.tuples.Tuple2Plus;
 
 public class RobotState {
@@ -150,6 +151,6 @@ public class RobotState {
     Logger.recordOutput(
         "Localization/Estimation/Robot", RobotState.getInstance().getEstimatedPose());
     Logger.recordOutput("Localization/Odometry/Robot", RobotState.getInstance().getOdometryPose());
-    Logger.recordOutput("Quest Pose", this.questPose);
+    Logger.recordOutput("Quest Pose", QuestNav.getInstance().getPose());
   }
 }

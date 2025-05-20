@@ -1,4 +1,4 @@
-package team5427.frc.robot.subsystems.Swerve;
+package team5427.frc.robot.subsystems.Swerve.io.talon;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.CANBus;
@@ -13,6 +13,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.DoubleSupplier;
 import team5427.frc.robot.Constants;
+import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
 
 /**
  * Provides an interface for asynchronously reading high-frequency measurements to a set of queues.

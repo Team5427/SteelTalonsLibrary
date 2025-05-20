@@ -14,8 +14,8 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import java.util.Queue;
 import team5427.frc.robot.Constants;
-import team5427.frc.robot.subsystems.Swerve.PhoenixOdometryThread;
 import team5427.frc.robot.subsystems.Swerve.SwerveConstants;
+import team5427.frc.robot.subsystems.Swerve.io.talon.PhoenixOdometryThread;
 
 public class GyroIOPigeon implements GyroIO {
   private Pigeon2 gyro;

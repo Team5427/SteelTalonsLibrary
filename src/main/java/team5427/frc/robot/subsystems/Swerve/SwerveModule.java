@@ -14,8 +14,8 @@ import org.littletonrobotics.junction.Logger;
 import team5427.frc.robot.Constants;
 import team5427.frc.robot.subsystems.Swerve.io.ModuleIO;
 import team5427.frc.robot.subsystems.Swerve.io.ModuleIOInputsAutoLogged;
-import team5427.frc.robot.subsystems.Swerve.io.ModuleIOTalonFXReal;
-import team5427.frc.robot.subsystems.Swerve.io.ModuleIOTalonFXSim;
+import team5427.frc.robot.subsystems.Swerve.io.talon.ModuleIOTalonFXReal;
+import team5427.frc.robot.subsystems.Swerve.io.talon.ModuleIOTalonFXSim;
 
 public class SwerveModule {
   private ModuleIO io;

@@ -1,4 +1,4 @@
-package team5427.frc.robot.subsystems.Swerve.io;
+package team5427.frc.robot.subsystems.Swerve.io.talon;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -7,8 +7,6 @@ import static edu.wpi.first.units.Units.NewtonMeter;
 import static edu.wpi.first.units.Units.Radian;
 import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
-
-import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -37,6 +35,8 @@ import edu.wpi.first.units.measure.Torque;
 import edu.wpi.first.units.measure.Voltage;
 import team5427.frc.robot.Constants;
 import team5427.frc.robot.subsystems.Swerve.SwerveConstants;
+import team5427.frc.robot.subsystems.Swerve.io.ModuleIO;
+import team5427.frc.robot.subsystems.Swerve.io.ModuleIO.ModuleIOInputs;
 import team5427.lib.motors.SteelTalonFX;
 
 public abstract class ModuleIOTalonFX implements ModuleIO {
@@ -262,7 +262,10 @@ public abstract class ModuleIOTalonFX implements ModuleIO {
     inputs.driveMotorPosition = Rotation2d.fromRadians(driveMotorPosition.getValue().in(Radian));
     inputs.driveMotorAngularVelocity = driveMotorVelocity.getValue();
     inputs.driveMotorLinearVelocity =
-        MetersPerSecond.of(driveMotorVelocity.getValue().in(RotationsPerSecond) * Math.PI * driveMotor.getMotorConfiguration().finalDiameterMeters);
+        MetersPerSecond.of(
+            driveMotorVelocity.getValue().in(RotationsPerSecond)
+                * Math.PI
+                * driveMotor.getMotorConfiguration().finalDiameterMeters);
 
     inputs.steerPosition =
         Rotation2d.fromRotations(steerMotor.getEncoderPosition(steerMotorPosition));
@@ -310,7 +313,8 @@ public abstract class ModuleIOTalonFX implements ModuleIO {
 
     driveMotor.velocityTorqueCurrentFOCRequest.withFeedForward(
         Amps.of(
-            (wheelTorque.in(NewtonMeter) / driveMotor.getTalonFX().getMotorKT().refresh().getValueAsDouble())
+            (wheelTorque.in(NewtonMeter)
+                    / driveMotor.getTalonFX().getMotorKT().refresh().getValueAsDouble())
                 * (driveMotor.getMotorConfiguration().gearRatio.getSensorToMechanismRatio())));
   }
 

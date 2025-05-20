@@ -1,13 +1,12 @@
-package team5427.frc.robot.subsystems.Swerve.io;
+package team5427.frc.robot.subsystems.Swerve.io.talon;
 
 import static edu.wpi.first.units.Units.Degree;
 import static edu.wpi.first.units.Units.Rotation;
 
-import java.util.Arrays;
-
-import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
-
 import edu.wpi.first.math.geometry.Rotation2d;
+import java.util.Arrays;
+import org.ironmaple.simulation.drivesims.SwerveModuleSimulation;
+import team5427.frc.robot.subsystems.Swerve.io.ModuleIO.ModuleIOInputs;
 import team5427.lib.motors.PhoenixUtil;
 
 public class ModuleIOTalonFXSim extends ModuleIOTalonFX {
@@ -46,11 +45,11 @@ public class ModuleIOTalonFXSim extends ModuleIOTalonFX {
   }
 
   @Override
-  public void setSteerPositionSetpoint(Rotation2d angle){
-    if(Math.abs(super.absolutePosition.getValue().in(Degree) - angle.getDegrees()) > 0.01){
-        super.setSteerPositionSetpoint(angle);
-    } else{
-        steerMotor.setSetpoint(super.steerMotorPosition.getValue());
+  public void setSteerPositionSetpoint(Rotation2d angle) {
+    if (Math.abs(super.absolutePosition.getValue().in(Degree) - angle.getDegrees()) > 0.01) {
+      super.setSteerPositionSetpoint(angle);
+    } else {
+      steerMotor.setSetpoint(super.steerMotorPosition.getValue());
     }
   }
 }

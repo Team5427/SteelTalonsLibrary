@@ -37,6 +37,7 @@ import team5427.frc.robot.subsystems.Swerve.gyro.GyroIO;
 import team5427.frc.robot.subsystems.Swerve.gyro.GyroIOInputsAutoLogged;
 import team5427.frc.robot.subsystems.Swerve.gyro.GyroIOPigeon;
 import team5427.frc.robot.subsystems.Swerve.gyro.GyroIOSim;
+import team5427.frc.robot.subsystems.Swerve.io.talon.PhoenixOdometryThread;
 import team5427.lib.kinematics.SwerveUtil;
 import team5427.lib.systems.swerve.SteelTalonsDriveSpeeds;
 import team5427.lib.systems.swerve.SteelTalonsSwerve;
@@ -131,13 +132,21 @@ public class SwerveSubsystem extends SubsystemBase
         kDriveSimulation =
             new SwerveDriveSimulation(mapleSimConfig, new Pose2d(3, 3, Rotation2d.k180deg));
         swerveModules[SwerveUtil.kFrontLeftModuleIdx] =
-            new SwerveModule(SwerveUtil.kFrontLeftModuleIdx, kDriveSimulation.getModules()[SwerveUtil.kFrontLeftModuleIdx]);
+            new SwerveModule(
+                SwerveUtil.kFrontLeftModuleIdx,
+                kDriveSimulation.getModules()[SwerveUtil.kFrontLeftModuleIdx]);
         swerveModules[SwerveUtil.kFrontRightModuleIdx] =
-            new SwerveModule(SwerveUtil.kFrontRightModuleIdx, kDriveSimulation.getModules()[SwerveUtil.kFrontRightModuleIdx]);
+            new SwerveModule(
+                SwerveUtil.kFrontRightModuleIdx,
+                kDriveSimulation.getModules()[SwerveUtil.kFrontRightModuleIdx]);
         swerveModules[SwerveUtil.kRearLeftModuleIdx] =
-            new SwerveModule(SwerveUtil.kRearLeftModuleIdx, kDriveSimulation.getModules()[SwerveUtil.kRearLeftModuleIdx]);
+            new SwerveModule(
+                SwerveUtil.kRearLeftModuleIdx,
+                kDriveSimulation.getModules()[SwerveUtil.kRearLeftModuleIdx]);
         swerveModules[SwerveUtil.kRearRightModuleIdx] =
-            new SwerveModule(SwerveUtil.kRearRightModuleIdx, kDriveSimulation.getModules()[SwerveUtil.kRearRightModuleIdx]);
+            new SwerveModule(
+                SwerveUtil.kRearRightModuleIdx,
+                kDriveSimulation.getModules()[SwerveUtil.kRearRightModuleIdx]);
         gyro = new GyroIOSim(kDriveSimulation.getGyroSimulation());
         break;
       default:
@@ -161,8 +170,10 @@ public class SwerveSubsystem extends SubsystemBase
     gyroInputs = new GyroIOInputsAutoLogged();
     odometryConsumer = consumer;
 
+    // Switch these based on the io being used
     // Start odometry thread
     PhoenixOdometryThread.getInstance().start();
+    // SparkOdometryThread.getInstance().start();
 
     sysId =
         new SysIdRoutine(
