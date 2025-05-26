@@ -1,4 +1,4 @@
-package team5427.lib.kinematics;
+package team5427.lib.systems.swerve;
 
 import team5427.lib.drivers.CANDeviceId;
 import team5427.lib.drivers.ComplexGearRatio;
@@ -18,6 +18,9 @@ public class SwerveUtil {
       new ComplexGearRatio(1.0 / (150.0 / 7.0));
   public static final ComplexGearRatio kSDSSteerGearRatioMK4n =
       new ComplexGearRatio((16.0 / 50.0), (10.0 / 60.0));
+  // STILL NEEDS TO BE UPDATED AND NEEDS FULL GEAR RATIO
+  public static final ComplexGearRatio kSDSSteerGearRatioMK5n =
+      new ComplexGearRatio((287.0 / 11.0));
   // public static final ComplexGearRatio kSDSSteerGearRatioMK4n =
   //     new ComplexGearRatio(1.0 / 18.75);L
   public static final ComplexGearRatio kSDSL1GearRatio =
@@ -28,6 +31,13 @@ public class SwerveUtil {
       new ComplexGearRatio((14.0 / 50.0), (28.0 / 16.0), (15.0 / 45.0));
   public static final ComplexGearRatio kSDSL4GearRatio =
       new ComplexGearRatio((16.0 / 48.0), (28.0 / 16.0), (15.0 / 45.0));
+
+  public static final ComplexGearRatio kSDSR1GearRatio =
+      new ComplexGearRatio((12.0 / 54.0), (32.0 / 25.0), (15.0 / 30.0));
+  public static final ComplexGearRatio kSDSR2GearRatio =
+      new ComplexGearRatio((14.0 / 54.0), (32.0 / 25.0), (15.0 / 30.0));
+  public static final ComplexGearRatio kSDSR3GearRatio =
+      new ComplexGearRatio((16.0 / 54.0), (32.0 / 25.0), (15.0 / 30.0));
 
   public final CANDeviceId[] kSteerMotorIds = new CANDeviceId[kDefaultNumModules];
   public final CANDeviceId[] kDriveMotorIds = new CANDeviceId[kDefaultNumModules];

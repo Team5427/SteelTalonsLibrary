@@ -18,11 +18,11 @@ import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
 import team5427.frc.robot.Constants;
 import team5427.lib.drivers.CANDeviceId;
-import team5427.lib.kinematics.SwerveUtil;
 import team5427.lib.motors.MotorConfiguration;
 import team5427.lib.motors.MotorConfiguration.IdleState;
 import team5427.lib.motors.MotorConfiguration.MotorMode;
 import team5427.lib.motors.MotorUtil;
+import team5427.lib.systems.swerve.SwerveUtil;
 
 public final class SwerveConstants {
   public static final double kWheelDiameterMeters = Units.inchesToMeters(3.98);

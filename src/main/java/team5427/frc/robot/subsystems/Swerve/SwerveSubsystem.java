@@ -38,9 +38,9 @@ import team5427.frc.robot.subsystems.Swerve.gyro.GyroIOInputsAutoLogged;
 import team5427.frc.robot.subsystems.Swerve.gyro.GyroIOPigeon;
 import team5427.frc.robot.subsystems.Swerve.gyro.GyroIOSim;
 import team5427.frc.robot.subsystems.Swerve.io.talon.PhoenixOdometryThread;
-import team5427.lib.kinematics.SwerveUtil;
 import team5427.lib.systems.swerve.SteelTalonsDriveSpeeds;
 import team5427.lib.systems.swerve.SteelTalonsSwerve;
+import team5427.lib.systems.swerve.SwerveUtil;
 import team5427.lib.systems.sysid.DrivetrainSysId;
 
 public class SwerveSubsystem extends SubsystemBase
