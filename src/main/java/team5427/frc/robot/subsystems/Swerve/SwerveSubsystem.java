@@ -31,7 +31,7 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import team5427.frc.robot.Constants;
-import team5427.frc.robot.RobotState;
+import team5427.frc.robot.RobotPose;
 import team5427.frc.robot.generated.TunerConstants;
 import team5427.frc.robot.subsystems.Swerve.gyro.GyroIO;
 import team5427.frc.robot.subsystems.Swerve.gyro.GyroIOInputsAutoLogged;
@@ -226,7 +226,7 @@ public class SwerveSubsystem extends SubsystemBase
 
       Rotation2d newGyroInput = Rotation2d.kZero;
       if (gyroInputs.connected && gyro != null) {
-        newGyroInput = gyroInputs.odometryYawPositions[i].plus(Rotation2d.k180deg);
+        newGyroInput = gyroInputs.odometryYawPositions[i];
       } else {
         Twist2d gyroTwist = SwerveConstants.m_kinematics.toTwist2d(moduleDeltas);
         newGyroInput = newGyroInput.plus(Rotation2d.fromRadians(gyroTwist.dtheta));
@@ -292,7 +292,7 @@ public class SwerveSubsystem extends SubsystemBase
             scaleDriveComponents(omegaInput, dampenAmount) * Math.PI);
 
     ChassisSpeeds fieldRelativeSpeeds =
-        ChassisSpeeds.fromRobotRelativeSpeeds(rawSpeeds, getGyroRotation());
+        ChassisSpeeds.fromRobotRelativeSpeeds(rawSpeeds, getGyroRotation().unaryMinus());
 
     ChassisSpeeds discretizedSpeeds =
         ChassisSpeeds.discretize(fieldRelativeSpeeds, Constants.kLoopSpeed);
@@ -332,7 +332,7 @@ public class SwerveSubsystem extends SubsystemBase
 
     double calculatedOmega =
         SwerveConstants.kRotationPIDController.calculate(
-            RobotState.getInstance().getAdaptivePose().getRotation().getRadians(),
+            RobotPose.getInstance().getAdaptivePose().getRotation().getRadians(),
             targetOmega.getRadians());
 
     ChassisSpeeds rawSpeeds =
@@ -342,7 +342,7 @@ public class SwerveSubsystem extends SubsystemBase
             calculatedOmega);
 
     ChassisSpeeds fieldRelativeSpeeds =
-        ChassisSpeeds.fromRobotRelativeSpeeds(rawSpeeds, getGyroRotation());
+        ChassisSpeeds.fromRobotRelativeSpeeds(rawSpeeds, getGyroRotation().unaryMinus());
 
     return fieldRelativeSpeeds;
   }
@@ -362,7 +362,8 @@ public class SwerveSubsystem extends SubsystemBase
 
   @Override
   public Rotation2d getGyroRotation() {
-    return gyroInputs.yawPosition.unaryMinus();
+
+    return gyroInputs.yawPosition;
   }
 
   @Override

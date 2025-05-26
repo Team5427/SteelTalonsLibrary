@@ -16,7 +16,7 @@ import team5427.frc.robot.Constants;
 import team5427.frc.robot.Constants.DriverConstants;
 import team5427.frc.robot.commands.chassis.ChassisMovement;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
-import team5427.frc.robot.subsystems.vision.QuestNav;
+import team5427.frc.robot.subsystems.vision.io.QuestNav;
 
 public class PilotingControls {
   private CommandXboxController joy;

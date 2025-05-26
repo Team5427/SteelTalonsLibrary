@@ -12,12 +12,13 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Timer;
 import lombok.Getter;
 import org.littletonrobotics.junction.Logger;
+import team5427.frc.robot.Constants.Mode;
 import team5427.frc.robot.subsystems.Swerve.SwerveConstants;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
-import team5427.frc.robot.subsystems.vision.QuestNav;
+import team5427.frc.robot.subsystems.vision.io.QuestNav;
 import team5427.lib.detection.tuples.Tuple2Plus;
 
-public class RobotState {
+public class RobotPose {
   public SwerveDriveOdometry odometry;
   public SwerveDrivePoseEstimator poseEstimator;
 
@@ -29,16 +30,16 @@ public class RobotState {
   private static final Matrix<N3, N1> odometryStateStdDevs =
       new Matrix<>(VecBuilder.fill(0.008, 0.008, 0.01));
 
-  private static RobotState instance;
+  private static RobotPose instance;
 
-  public static RobotState getInstance() {
+  public static RobotPose getInstance() {
     if (instance == null) {
-      instance = new RobotState();
+      instance = new RobotPose();
     }
     return instance;
   }
 
-  public RobotState() {
+  public RobotPose() {
     this.odometry =
         new SwerveDriveOdometry(
             SwerveConstants.m_kinematics,
@@ -134,6 +135,9 @@ public class RobotState {
   }
 
   public Pose2d getAdaptivePose() {
+    if (Constants.currentMode.equals(Mode.SIM)) {
+      return SwerveSubsystem.getInstance().getKDriveSimulation().getSimulatedDriveTrainPose();
+    }
     return getEstimatedPose();
   }
 
@@ -142,15 +146,15 @@ public class RobotState {
     this.poseEstimator.resetRotation(heading);
   }
 
-  public Tuple2Plus<Double, Rotation2d> getOdometryHeading() {
+  public Tuple2Plus<Double, Rotation2d> getGyroHeading() {
     return new Tuple2Plus<Double, Rotation2d>(
-        Timer.getTimestamp(), this.odometry.getPoseMeters().getRotation());
+        Timer.getTimestamp(), SwerveSubsystem.getInstance().getGyroRotation());
   }
 
   public void log() {
     Logger.recordOutput(
-        "Localization/Estimation/Robot", RobotState.getInstance().getEstimatedPose());
-    Logger.recordOutput("Localization/Odometry/Robot", RobotState.getInstance().getOdometryPose());
+        "Localization/Estimation/Robot", RobotPose.getInstance().getEstimatedPose());
+    Logger.recordOutput("Localization/Odometry/Robot", RobotPose.getInstance().getOdometryPose());
     Logger.recordOutput("Quest Pose", QuestNav.getInstance().getPose());
   }
 }

@@ -8,59 +8,41 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.io.IOException;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.units.DistanceUnit;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Mult;
-import edu.wpi.first.wpilibj.Threads;
+import java.io.IOException;
 import lombok.Getter;
 import lombok.Setter;
-
-import org.apache.commons.math3.analysis.integration.RombergIntegrator;
-import org.apache.commons.math3.analysis.integration.SimpsonIntegrator;
-import org.apache.commons.math3.analysis.integration.gauss.GaussIntegrator;
-import org.apache.commons.math3.analysis.solvers.IllinoisSolver;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-import org.apache.commons.math3.geometry.euclidean.twod.Vector2D;
 import org.apache.commons.math3.linear.ArrayRealVector;
 import org.apache.commons.math3.linear.RealVector;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.events.EventHandler;
 import org.apache.commons.math3.ode.nonstiff.ClassicalRungeKuttaIntegrator;
-import org.apache.commons.math3.ode.nonstiff.DormandPrince54Integrator;
-import org.apache.commons.math3.ode.nonstiff.EulerIntegrator;
-import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.NelderMeadSimplex;
-
 import team5427.lib.detection.tuples.Tuple3Plus;
 
 public class AdjustedParabolic {
 
   @Getter
   private Mult<DistanceUnit, DistanceUnit> kProjectileArea = Meters.of(0.0).times(Meters.of(0.0));
-  @Getter
-  private double ballisticCoefficient = 0.0;
 
-  @Setter 
-  @Getter
-  private AdjustedParabolicConfiguration configuration;
+  @Getter private double ballisticCoefficient = 0.0;
 
-  @Setter
-  @Getter
-  private Translation3d projectilePositionToTarget;
+  @Setter @Getter private AdjustedParabolicConfiguration configuration;
+
+  @Setter @Getter private Translation3d projectilePositionToTarget;
 
   double t0 = 0.0;
-    double tFinal = 2.0;
-    double stepSize = 0.1;
-    double vx = 0;
-    double vy = 0;
-    double w = 0;
-    double[] y0 = {0, 0, 0, vx, vy, 0, w}; // Initial position and velocity
-
-
+  double tFinal = 2.0;
+  double stepSize = 0.1;
+  double vx = 0;
+  double vy = 0;
+  double w = 0;
+  double[] y0 = {0, 0, 0, vx, vy, 0, w}; // Initial position and velocity
 
   public AdjustedParabolic(AdjustedParabolicConfiguration configuration) {
     this.configuration = configuration;
@@ -81,7 +63,6 @@ public class AdjustedParabolic {
    *     Bottom flywheel velocity
    */
   public Tuple3Plus<Rotation2d, LinearVelocity, LinearVelocity> calculateSetpoints() {
-    
 
     FirstOrderDifferentialEquations ode = this.new NetForceODE();
     double kTopFlywheelConversionFactor =
@@ -90,12 +71,20 @@ public class AdjustedParabolic {
         configuration.kBottomFlywheelRadius.in(Meters) * 2.0 * Math.PI;
     double smallestDistance = Double.MAX_VALUE;
     double[] state = new double[3];
-    double[] targetPositionArray = new double[]{projectilePositionToTarget.getX(), projectilePositionToTarget.getY(), projectilePositionToTarget.getZ()};
-Vector3D targetPositionVector = new Vector3D(
-    projectilePositionToTarget.getX(),
-    projectilePositionToTarget.getY(),
-    projectilePositionToTarget.getZ());
-    // FirstOrderIntegrator integrator = new DormandPrince54Integrator(stepSize, stepSize * 10, 1.0e-2, 1.0e-2);
+    double[] position = new double[3];
+    double[] targetPositionArray =
+        new double[] {
+          projectilePositionToTarget.getX(),
+          projectilePositionToTarget.getY(),
+          projectilePositionToTarget.getZ()
+        };
+    Vector3D targetPositionVector =
+        new Vector3D(
+            projectilePositionToTarget.getX(),
+            projectilePositionToTarget.getY(),
+            projectilePositionToTarget.getZ());
+    // FirstOrderIntegrator integrator = new DormandPrince54Integrator(stepSize, stepSize * 10,
+    // 1.0e-2, 1.0e-2);
     FirstOrderIntegrator integrator = new ClassicalRungeKuttaIntegrator(stepSize);
     integrator.addEventHandler(
         new EventHandler() {
@@ -138,7 +127,7 @@ Vector3D targetPositionVector = new Vector3D(
           public void resetState(double t, double[] y) {}
         },
         0.01,
-        0.02,
+        0.01,
         1000);
 
     double maxFlywheelSpeed = configuration.kFlywheelMaxSpeed.in(RotationsPerSecond);
@@ -148,23 +137,17 @@ Vector3D targetPositionVector = new Vector3D(
 
       // in rotations per minute
       // Top Flywheel
-      for (int omega = 1;
-          omega < maxFlywheelSpeed;
-          omega += 1) {
+      for (int omega = 1; omega < maxFlywheelSpeed; omega += 1) {
         double vt = omega * kTopFlywheelConversionFactor;
         // in rotations per minute
         // Bottom Flywheel
-        for (int gamma = 1;
-            gamma < maxFlywheelSpeed;
-            gamma += 1) {
-          double vb = gamma * kBottomFlywheelConversionFactor ;
+        for (int gamma = 1; gamma < maxFlywheelSpeed; gamma += 1) {
+          double vb = gamma * kBottomFlywheelConversionFactor;
           double a = (vb + vt) / 2.0;
           double[] y1 = y0.clone();
           y0[3] = Math.cos(theta) * a;
           y0[4] = Math.sin(theta) * a;
-          y0[6] =
-              -(vt / kTopFlywheelConversionFactor)
-                  + (vb / kBottomFlywheelConversionFactor);
+          y0[6] = -(vt / kTopFlywheelConversionFactor) + (vb / kBottomFlywheelConversionFactor);
           // y0[6] = w;
           integrator.integrate(ode, t0, y0, tFinal, y1);
           Vector3D positionVector = new Vector3D(y1[0], y1[1], y1[2]);
@@ -175,12 +158,16 @@ Vector3D targetPositionVector = new Vector3D(
             state[0] = theta;
             state[1] = vt;
             state[2] = vb;
+            position[0] = positionVector.getX();
+            position[1] = positionVector.getY();
+            position[2] = positionVector.getZ();
           }
         }
       }
     }
     // System.out.printf("(%.2f, %.2f, %.2f)\n", y2[0], y2[1], y2[2]);
     // System.out.println(smallestDistance);
+    System.out.printf("%.2f, %.2f, %.2f \n", position[0], position[1], position[2]);
     return new Tuple3Plus<Rotation2d, LinearVelocity, LinearVelocity>(
         Rotation2d.fromDegrees(state[0]),
         MetersPerSecond.of(state[1]),
@@ -188,32 +175,33 @@ Vector3D targetPositionVector = new Vector3D(
   }
 
   public static void main(String[] args) {
-    
+
     AdjustedParabolic parabolic = new AdjustedParabolic(new AdjustedParabolicConfiguration());
-    Translation3d translation3d = new Translation3d(4, 2, 0);
+    Translation3d translation3d = new Translation3d(6, 2, 0);
     long prevTime = System.currentTimeMillis();
     parabolic.setProjectilePositionToTarget(translation3d);
-    
+
     Object o = parabolic.calculateSetpoints();
     System.out.println((System.currentTimeMillis() - prevTime));
     System.out.println(o);
     System.out.println(translation3d);
     try {
-      while(true) {
-      int i = System.in.read();
-      if(i != -1){
-        prevTime = System.currentTimeMillis();
-        o = parabolic.calculateSetpoints();
-        System.out.println((System.currentTimeMillis() - prevTime));
-        System.out.println(o);
-        System.out.println(translation3d);
+      while (true) {
+        int i = System.in.read();
+        if (i != -1) {
+          prevTime = System.currentTimeMillis();
+          o = parabolic.calculateSetpoints();
+          System.out.println((System.currentTimeMillis() - prevTime));
+          System.out.println(o);
+          System.out.println(translation3d);
+          System.out.println("I love men :D");
+        }
       }
-    }
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-   
+
     // double vx = 5;
     // double vy = 3;
     // // Initial conditions: x, y, z, vx, vy, vz, w

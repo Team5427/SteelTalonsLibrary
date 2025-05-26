@@ -12,7 +12,8 @@ import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.Logger;
 import team5427.frc.robot.io.PilotingControls;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
-import team5427.frc.robot.subsystems.vision.QuestNav;
+import team5427.frc.robot.subsystems.vision.VisionSubsystem;
+import team5427.frc.robot.subsystems.vision.io.QuestNav;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,13 +36,13 @@ public class RobotContainer {
 
     switch (Constants.currentMode) {
       case REAL:
-        SwerveSubsystem.getInstance(RobotState.getInstance()::addOdometryMeasurement);
+        SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement);
         break;
       case REPLAY:
-        SwerveSubsystem.getInstance(RobotState.getInstance()::addOdometryMeasurement);
+        SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement);
         break;
       case SIM:
-        SwerveSubsystem.getInstance(RobotState.getInstance()::addOdometryMeasurement);
+        SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement);
         SimulatedArena.getInstance()
             .addDriveTrainSimulation(SwerveSubsystem.getInstance().getKDriveSimulation());
         SimulatedArena.getInstance().clearGamePieces();
@@ -50,6 +51,10 @@ public class RobotContainer {
       default:
         break;
     }
+    VisionSubsystem.getInstance(
+        RobotPose.getInstance()::addVisionMeasurement,
+        RobotPose.getInstance()::getAdaptivePose,
+        RobotPose.getInstance()::getGyroHeading);
     QuestNav.getInstance().setPose(new Pose2d(10 * Math.random(), 4, Rotation2d.kZero));
     buttonBindings();
   }
@@ -70,12 +75,10 @@ public class RobotContainer {
 
   public void resetSimulationField() {
     if (Constants.currentMode != Constants.Mode.SIM) return;
-    Pose2d pose = new Pose2d(3, 3, new Rotation2d());
+    Pose2d pose = new Pose2d(3, 3, Rotation2d.kZero);
 
-    SwerveSubsystem.getInstance()
-        .getKDriveSimulation()
-        .setSimulationWorldPose(pose);
-    RobotState.getInstance().resetAllPose(pose);
+    SwerveSubsystem.getInstance().getKDriveSimulation().setSimulationWorldPose(pose);
+    RobotPose.getInstance().resetAllPose(pose);
     SimulatedArena.getInstance().resetFieldForAuto();
   }
 
