@@ -4,9 +4,12 @@ import static edu.wpi.first.units.Units.Microseconds;
 import static edu.wpi.first.units.Units.Seconds;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.networktables.*;
 import edu.wpi.first.wpilibj.Timer;
 
@@ -238,6 +241,10 @@ public class QuestNav {
     return Rotation2d.fromDegrees(-questEulerAngles.get()[1]);
   }
 
+  private Rotation3d getYaw3d() {
+    return new Rotation3d(getQuaternion());
+  }
+
   /**
    * Gets the position of the Quest headset as a Translation2d object. Converts the Quest coordinate
    * system to the robot coordinate system.
@@ -249,6 +256,11 @@ public class QuestNav {
     return new Translation2d(questnavPosition[2], -questnavPosition[0]);
   }
 
+  private Translation3d getTranslation3d() {
+    float[] questnavPosition = questPosition.get();
+    return new Translation3d(questnavPosition[2], -questnavPosition[0], questnavPosition[1]);
+  }
+
   /**
    * Gets the complete pose (position and orientation) of the Quest headset.
    *
@@ -256,5 +268,9 @@ public class QuestNav {
    */
   public Pose2d getPose() {
     return new Pose2d(getTranslation(), getYaw());
+  }
+
+  public Pose3d getPose3d() {
+    return new Pose3d(getTranslation3d(), getYaw3d());
   }
 }

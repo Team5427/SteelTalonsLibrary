@@ -42,6 +42,7 @@ public interface VisionIO {
 
   public default void setPipeline(int pipelineNumber) {}
 
+  /** Applies the robot-to-camera transformation */
   public void applyCameraTransformation(Transform3d transformation);
 
   public default void setStdDev(Matrix<N3, N1> stddev) {}

@@ -75,4 +75,5 @@ public class VisionConstants {
       };
 
   public static double kQuestStdDevBaseline = 0.001;
+  public static String kQuestLoggingDirectory = "Quest/";
 }

@@ -132,6 +132,7 @@ public class VisionIOPhoton implements VisionIO {
 
   @Override
   public void applyCameraTransformation(Transform3d transformation) {
+    cameraOffset = transformation;
     photonPoseEstimator.setRobotToCameraTransform(transformation);
   }
 
