@@ -187,3 +187,7 @@ compile_commands.json
 .factorypath
 
 gradle.properties
+
+.gradle.properties
+gradle.properties
+gradle.properties
