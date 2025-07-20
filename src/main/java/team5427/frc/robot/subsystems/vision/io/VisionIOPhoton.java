@@ -48,8 +48,8 @@ public class VisionIOPhoton implements VisionIO {
 
     photonPoseEstimator =
         new PhotonPoseEstimator(
-            VisionConstants.kAprilTagLayout, PoseStrategy.PNP_DISTANCE_TRIG_SOLVE, cameraTransform);
-    photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CONSTRAINED_SOLVEPNP);
+            VisionConstants.kAprilTagLayout, PoseStrategy.CONSTRAINED_SOLVEPNP, cameraTransform);
+    photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.PNP_DISTANCE_TRIG_SOLVE);
     // photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CONSTRAINED_SOLVEPNP);
     this.cameraOffset = cameraTransform;
     this.getReferencePose = getReferencePose;
@@ -64,10 +64,10 @@ public class VisionIOPhoton implements VisionIO {
     inputs.connected = cam.isConnected();
     List<PhotonPipelineResult> results = cam.getAllUnreadResults();
     List<PoseObservation> obs = new LinkedList<PoseObservation>();
+    photonPoseEstimator.setReferencePose(getReferencePose.get());
+    photonPoseEstimator.addHeadingData(getHeadingData.get().r, getHeadingData.get().t);
 
     for (int i = results.size() - 1; i >= 0; i--) {
-      // photonPoseEstimator.setReferencePose(getReferencePose.get());
-      photonPoseEstimator.addHeadingData(getHeadingData.get().r, getHeadingData.get().t);
 
       if (results.get(i).multitagResult.isPresent()) {
         Optional<EstimatedRobotPose> estimatedPose = photonPoseEstimator.update(results.get(i));

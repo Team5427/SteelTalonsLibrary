@@ -148,13 +148,13 @@ public class RobotPose {
 
   public Tuple2Plus<Double, Rotation2d> getGyroHeading() {
     return new Tuple2Plus<Double, Rotation2d>(
-        Timer.getTimestamp(), SwerveSubsystem.getInstance().getGyroRotation());
+        Timer.getTimestamp(), SwerveSubsystem.getInstance().getGyroRotationAdjusted());
   }
 
   public void log() {
     Logger.recordOutput(
         "Localization/Estimation/Robot", RobotPose.getInstance().getEstimatedPose());
     Logger.recordOutput("Localization/Odometry/Robot", RobotPose.getInstance().getOdometryPose());
-    Logger.recordOutput("Quest Pose", QuestNav.getInstance().getPose());
+    Logger.recordOutput("Quest Pose", QuestNav.getInstance().getPose3d());
   }
 }

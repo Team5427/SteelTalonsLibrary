@@ -59,8 +59,8 @@ public class VisionIOPhotonSim implements VisionIO {
     this.getReferencePose = getReferencePose;
     this.photonPoseEstimator =
         new PhotonPoseEstimator(
-            VisionConstants.kAprilTagLayout, PoseStrategy.PNP_DISTANCE_TRIG_SOLVE, cameraTransform);
-    photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CONSTRAINED_SOLVEPNP);
+            VisionConstants.kAprilTagLayout, PoseStrategy.CONSTRAINED_SOLVEPNP, cameraTransform);
+    photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.PNP_DISTANCE_TRIG_SOLVE);
   }
 
   @Override

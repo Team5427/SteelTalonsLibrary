@@ -21,12 +21,9 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import team5427.frc.robot.subsystems.vision.io.QuestNav;
-// import team5427.frc.robot.subsystems.ProngEffector.ProngSubsystem;
 import team5427.lib.drivers.SteelTalonsLogger;
 import team5427.lib.drivers.VirtualSubsystem;
 import team5427.lib.kinematics.shooter.projectiles.parabolic.AdjustedParabolicThread;
-
-// import frc.robot.BuildConstants;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -38,12 +35,6 @@ public class Robot extends LoggedRobot {
 
   private final RobotContainer m_robotContainer;
 
-  // private SteelTalonFX talon0;
-  // private SteelTalonFX talonSteer0;
-  // SwerveModule module;
-  // private SteelTalonFX steerMotor = new
-  // SteelTalonFX(SwerveConstants.kSwerveUtilInstance.kSteerMotorIds[SwerveUtil.kFrontLeftModuleIdx]);
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -53,12 +44,6 @@ public class Robot extends LoggedRobot {
 
     Logger.recordMetadata("Reefscape", "Steel Talons 5427 Robot Code for the Game Reefscape, 2025");
     Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-    // Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-
-    // m_swerve = SwerveSubsystem.getInstance();
-    // m_cascade = CascadeSubsystem.getInstance();
-    // m_endEffector = ProngSubsystem.getInstance();
-    // m_climber = ClimberSubsystem.getInstance();
 
     if (RobotBase.isReal()) {
       Constants.currentMode = Constants.Mode.REAL;
@@ -149,10 +134,7 @@ public class Robot extends LoggedRobot {
   public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {
-    // SwerveSubsystem.state = DrivingStates.INACTIVE;
-    // SwerveSubsystem.getInstance().stop();
-  }
+  public void disabledPeriodic() {}
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
@@ -183,10 +165,7 @@ public class Robot extends LoggedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
-    // Logger.recordOutput("ANGLES",steerMotor.getTalonFX().getPosition().getValue().in(Degree));
-    // steerMotor.setSetpoint(Rotation2d.fromDegrees(90));
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void testInit() {

@@ -19,6 +19,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.concurrent.locks.Lock;
@@ -366,14 +368,22 @@ public class SwerveSubsystem extends SubsystemBase
     return gyroInputs.yawPosition;
   }
 
+  public Rotation2d getGyroRotationAdjusted() {
+    if (DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get().equals(Alliance.Red)) {
+      return gyroInputs.yawPosition.plus(Rotation2d.k180deg);
+    }
+    return gyroInputs.yawPosition;
+  }
+
   @Override
   public void resetGyro(Rotation2d newYaw) {
-    gyro.resetGyroYawAngle(newYaw.unaryMinus());
+    gyro.resetGyroYawAngle(newYaw);
   }
 
   @Override
   public ChassisSpeeds getCurrentChassisSpeeds() {
-    return SwerveConstants.m_kinematics.toChassisSpeeds(actualModuleStates);
+    return Constants.config.toChassisSpeeds(actualModuleStates);
   }
 
   @Override

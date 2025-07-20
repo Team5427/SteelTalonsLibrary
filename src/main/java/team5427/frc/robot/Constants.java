@@ -4,9 +4,12 @@
 
 package team5427.frc.robot;
 
+import static edu.wpi.first.units.Units.Hertz;
+
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.Frequency;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -20,6 +23,10 @@ public final class Constants {
   public static final String kCanivoreBusName = "canivore_bus_name";
   public static final double kOdometryFrequency =
       new CANBus(Constants.kCanivoreBusName).isNetworkFD() ? 250.0 : 100.0;
+
+  public static final Frequency kHighPriorityUpdateFrequency = Hertz.of(100.0);
+  public static final Frequency kMediumPriorityUpdateFrequency = Hertz.of(50.0);
+  public static final Frequency kLowPriorityUpdateFrequency = Hertz.of(10.0);
 
   public static Mode currentMode = Mode.REAL;
 

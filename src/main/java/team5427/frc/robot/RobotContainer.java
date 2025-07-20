@@ -79,6 +79,7 @@ public class RobotContainer {
 
     SwerveSubsystem.getInstance().getKDriveSimulation().setSimulationWorldPose(pose);
     RobotPose.getInstance().resetAllPose(pose);
+    SwerveSubsystem.getInstance().resetGyro(Rotation2d.kZero);
     SimulatedArena.getInstance().resetFieldForAuto();
   }
 
