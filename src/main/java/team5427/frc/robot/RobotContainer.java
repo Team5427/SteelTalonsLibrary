@@ -10,8 +10,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.Logger;
+import team5427.frc.robot.io.OperatorControls;
 import team5427.frc.robot.io.PilotingControls;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
+import team5427.frc.robot.subsystems.intake.IntakeSubsystem;
 import team5427.frc.robot.subsystems.vision.VisionSubsystem;
 import team5427.frc.robot.subsystems.vision.io.QuestNav;
 
@@ -37,16 +39,18 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement);
+        IntakeSubsystem.getInstance();
         break;
       case REPLAY:
         SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement);
+        IntakeSubsystem.getInstance();
         break;
       case SIM:
         SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement);
         SimulatedArena.getInstance()
             .addDriveTrainSimulation(SwerveSubsystem.getInstance().getKDriveSimulation());
         SimulatedArena.getInstance().clearGamePieces();
-
+        IntakeSubsystem.getInstance(SwerveSubsystem.getInstance()::getKDriveSimulation);
         break;
       default:
         break;
@@ -61,6 +65,7 @@ public class RobotContainer {
 
   private void buttonBindings() {
     new PilotingControls();
+    new OperatorControls();
   }
 
   /**

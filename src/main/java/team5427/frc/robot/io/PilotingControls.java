@@ -2,18 +2,22 @@ package team5427.frc.robot.io;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team5427.frc.robot.Constants;
 import team5427.frc.robot.Constants.DriverConstants;
 import team5427.frc.robot.RobotPose;
 import team5427.frc.robot.Superstructure;
+import team5427.frc.robot.Superstructure.SwerveStates;
 import team5427.frc.robot.commands.chassis.ChassisMovement;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
 import team5427.frc.robot.subsystems.vision.io.QuestNav;
 
 public class PilotingControls {
   private CommandXboxController joy;
+  private Trigger autonTrigger;
 
   public PilotingControls() {
     joy = new CommandXboxController(DriverConstants.kDriverJoystickPort);
@@ -27,12 +31,28 @@ public class PilotingControls {
 
   /** Made private to prevent multiple calls to this method */
   private void initalizeTriggers() {
-       
+
     Superstructure.SwerveStates.SwerveTriggers.kDriving.onTrue(new ChassisMovement(joy));
 
-    Superstructure.SwerveStates.SwerveTriggers.kAuton.onTrue(new ChassisMovement(joy) ); // Dummy Command, replace with real Auton Driving Command
+    Superstructure.SwerveStates.SwerveTriggers.kAuton.onTrue(
+        new ChassisMovement(joy)); // Dummy Command, replace with real Auton Driving Command
 
-
+    autonTrigger =
+        new Trigger(
+            () -> {
+              return DriverStation.isAutonomous();
+            });
+    autonTrigger
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  Superstructure.kSelectedSwerveState = SwerveStates.AUTON;
+                }))
+        .onFalse(
+            new InstantCommand(
+                () -> {
+                  Superstructure.kSelectedSwerveState = SwerveStates.DRIVING;
+                }));
     // SwerveSubsystem.getInstance().setDefaultCommand(new ChassisMovement(joy));
     joy.a()
         .onTrue(
