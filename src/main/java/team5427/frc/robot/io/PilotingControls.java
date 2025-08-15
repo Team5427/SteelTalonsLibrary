@@ -18,6 +18,7 @@ import team5427.frc.robot.subsystems.vision.io.QuestNav;
 public class PilotingControls {
   private CommandXboxController joy;
   private Trigger autonTrigger;
+  private Trigger disabledTrigger;
 
   public PilotingControls() {
     joy = new CommandXboxController(DriverConstants.kDriverJoystickPort);
@@ -31,11 +32,13 @@ public class PilotingControls {
 
   /** Made private to prevent multiple calls to this method */
   private void initalizeTriggers() {
+    // SwerveSubsystem.getInstance().setDefaultCommand(new ChassisMovement(joy));
 
-    Superstructure.SwerveStates.SwerveTriggers.kDriving.onTrue(new ChassisMovement(joy));
-
-    Superstructure.SwerveStates.SwerveTriggers.kAuton.onTrue(
-        new ChassisMovement(joy)); // Dummy Command, replace with real Auton Driving Command
+    disabledTrigger =
+        new Trigger(
+            () -> {
+              return DriverStation.isDisabled();
+            });
 
     autonTrigger =
         new Trigger(
@@ -53,6 +56,22 @@ public class PilotingControls {
                 () -> {
                   Superstructure.kSelectedSwerveState = SwerveStates.DRIVING;
                 }));
+
+    disabledTrigger
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  Superstructure.kSelectedSwerveState = SwerveStates.DISABLED;
+                }))
+        .negate()
+        .and(autonTrigger.negate())
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  Superstructure.kSelectedSwerveState = SwerveStates.DRIVING;
+                }));
+
+    Superstructure.SwerveStates.SwerveTriggers.kDriving.whileTrue(new ChassisMovement(joy));
     // SwerveSubsystem.getInstance().setDefaultCommand(new ChassisMovement(joy));
     joy.a()
         .onTrue(
@@ -61,7 +80,6 @@ public class PilotingControls {
                         QuestNav.getInstance()
                             .setPose(new Pose2d(10 * Math.random(), 4, Rotation2d.kZero)))
                 .ignoringDisable(true));
-    joy.x().onTrue(new InstantCommand(() -> {}));
 
     // Example Coral Placement Code
     // TODO: delete these code for your own project

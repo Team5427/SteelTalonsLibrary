@@ -33,6 +33,7 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import team5427.frc.robot.Constants;
+import team5427.frc.robot.Constants.Mode;
 import team5427.frc.robot.RobotPose;
 import team5427.frc.robot.generated.TunerConstants;
 import team5427.frc.robot.subsystems.Swerve.gyro.GyroIO;
@@ -204,7 +205,13 @@ public class SwerveSubsystem extends SubsystemBase
     }
 
     for (int i = 0; i < swerveModules.length; i++) {
-      swerveModules[i].setModuleState(targetModuleStates[i], driveFeedforwards);
+
+      if (Constants.currentMode != Mode.SIM) {
+        swerveModules[i].setModuleState(targetModuleStates[i], driveFeedforwards);
+      } else {
+        swerveModules[i].setModuleState(targetModuleStates[i]);
+      }
+      ;
       actualModuleStates[i] = swerveModules[i].getModuleState(); // Read actual module state
       swerveModules[i].periodic(); // Update Module Inputs
     }

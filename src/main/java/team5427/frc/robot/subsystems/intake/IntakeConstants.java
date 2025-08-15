@@ -19,8 +19,8 @@ public final class IntakeConstants {
   public static final ComplexGearRatio kPivotMotorGearRatio = new ComplexGearRatio(1.0);
   public static final ComplexGearRatio kRollerMotorGearRatio = new ComplexGearRatio(1.0);
 
-  public static final CANDeviceId kPivotMotorCanId = new CANDeviceId(2);
-  public static final CANDeviceId kRollerMotorCanId = new CANDeviceId(3);
+  public static final CANDeviceId kPivotMotorCanId = new CANDeviceId(12);
+  public static final CANDeviceId kRollerMotorCanId = new CANDeviceId(13);
 
   static {
     kPivotMotorConfiguration.gearRatio = kPivotMotorGearRatio;

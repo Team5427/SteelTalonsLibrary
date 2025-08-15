@@ -1,6 +1,14 @@
 package team5427.frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.pathplanner.lib.commands.FollowPathCommand;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -72,8 +80,8 @@ public class Robot extends LoggedRobot {
     m_robotContainer = new RobotContainer();
 
     FollowPathCommand.warmupCommand().schedule();
-    AdjustedParabolicThread.getInstance().setShouldCompute(false);
-    // AdjustedParabolicThread.getInstance().start();
+    AdjustedParabolicThread.getInstance().setShouldCompute(true);
+    AdjustedParabolicThread.getInstance().start();
   }
 
   /**
@@ -99,24 +107,24 @@ public class Robot extends LoggedRobot {
     RobotPose.getInstance().log();
     QuestNav.getInstance().processHeartbeat();
     QuestNav.getInstance().cleanupResponses();
-    // Translation3d target =
-    //     new Pose3d(RobotPose.getInstance().getAdaptivePose())
-    //         .plus(new Transform3d(0, 0, 4, Rotation3d.kZero))
-    //         .getTranslation();
+    Translation3d target =
+        new Pose3d(RobotPose.getInstance().getAdaptivePose())
+            .plus(new Transform3d(0, 0, 4, Rotation3d.kZero))
+            .getTranslation();
 
-    // AdjustedParabolicThread.getInstance().setTarget(target);
+    AdjustedParabolicThread.getInstance().setTarget(target);
 
-    // Logger.recordOutput(
-    //     "Rotation Output: ",
-    //     MathUtil.inputModulus(
-    //         AdjustedParabolicThread.getInstance().getOutputState().r.getDegrees(), 0, 360));
-    // Logger.recordOutput(
-    //     "Velocity Output: ",
-    //     new Translation2d(
-    //         AdjustedParabolicThread.getInstance().getOutputState().t.in(MetersPerSecond),
-    //         AdjustedParabolicThread.getInstance().getOutputState().a.in(MetersPerSecond)));
-    // Logger.recordOutput("Target", target);
-    // Logger.recordOutput("Thread Interupted", AdjustedParabolicThread.interrupted());
+    Logger.recordOutput(
+        "Rotation Output: ",
+        MathUtil.inputModulus(
+            AdjustedParabolicThread.getInstance().getOutputState().r.getDegrees(), 0, 360));
+    Logger.recordOutput(
+        "Velocity Output: ",
+        new Translation2d(
+            AdjustedParabolicThread.getInstance().getOutputState().t.in(MetersPerSecond),
+            AdjustedParabolicThread.getInstance().getOutputState().a.in(MetersPerSecond)));
+    Logger.recordOutput("Target", target);
+    Logger.recordOutput("Thread Interupted", AdjustedParabolicThread.interrupted());
     // Return to normal thread priority
     // Threads.setCurrentThreadPriority(false, 10);
   }

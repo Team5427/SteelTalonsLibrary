@@ -2,12 +2,13 @@ package team5427.frc.robot;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
-public class Superstructure {
+public final class Superstructure {
   public static enum SwerveStates {
     DRIVING,
     AUTO_ALIGN,
     INTAKE_ASSISTANCE,
-    AUTON;
+    AUTON,
+    DISABLED;
 
     public static class SwerveTriggers {
       public static final Trigger kDriving =
@@ -30,10 +31,15 @@ public class Superstructure {
               () -> {
                 return kSelectedSwerveState.equals(AUTON);
               });
+      public static final Trigger kDisabled =
+          new Trigger(
+              () -> {
+                return kSelectedSwerveState.equals(DISABLED);
+              });
     }
   }
 
-  public static SwerveStates kSelectedSwerveState = SwerveStates.DRIVING;
+  public static SwerveStates kSelectedSwerveState = SwerveStates.DISABLED;
 
   public static enum IntakeStates {
     INTAKING,
