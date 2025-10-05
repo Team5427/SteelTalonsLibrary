@@ -1,16 +1,19 @@
 package team5427.frc.robot.commands.chassis;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import org.littletonrobotics.junction.Logger;
 import org.team4206.battleaid.common.TunedJoystick;
 import org.team4206.battleaid.common.TunedJoystick.ResponseCurve;
+import team5427.frc.robot.Constants;
 import team5427.frc.robot.Constants.DriverConstants;
 import team5427.frc.robot.subsystems.Swerve.SwerveConstants;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
 
-public class ChassisMovement extends Command {
+public class ControlledChassisMovement extends Command {
 
   private SwerveSubsystem swerveSubsystem;
   private CommandXboxController joy;
@@ -18,7 +21,9 @@ public class ChassisMovement extends Command {
   private TunedJoystick translationJoystick;
   private TunedJoystick rotationJoystick;
 
-  public ChassisMovement(CommandXboxController driverJoystick) {
+  private Rotation2d controlledAngle;
+
+  public ControlledChassisMovement(CommandXboxController driverJoystick) {
     swerveSubsystem = SwerveSubsystem.getInstance();
     joy = driverJoystick;
     translationJoystick = new TunedJoystick(joy.getHID());
@@ -30,11 +35,8 @@ public class ChassisMovement extends Command {
     translationJoystick.setDeadzone(DriverConstants.kDriverControllerJoystickDeadzone);
     rotationJoystick.setDeadzone(DriverConstants.kDriverControllerJoystickDeadzone);
     addRequirements(swerveSubsystem);
-  }
 
-  @Override
-  public void initialize() {
-    // swerveSubsystem.setFieldOp(DriverStation.getAlliance().get().equals(Alliance.Red));
+    controlledAngle = swerveSubsystem.getGyroRotationAdjusted();
   }
 
   @Override
@@ -42,11 +44,17 @@ public class ChassisMovement extends Command {
     if (DriverStation.isTeleop()) {
       double vx = -translationJoystick.getRightY();
       double vy = -translationJoystick.getRightX();
-      double omegaRadians = -rotationJoystick.getLeftX() * Math.abs(translationJoystick.getLeftX());
+      double omegaRadians = -rotationJoystick.getLeftX();
 
       double dampener = (joy.getRightTriggerAxis() * SwerveConstants.kDampenerDampeningAmount);
 
-      ChassisSpeeds driverSpeeds = swerveSubsystem.getDriveSpeeds(vx, vy, omegaRadians, dampener);
+      controlledAngle =
+          controlledAngle.plus(
+              Rotation2d.fromRadians(
+                  omegaRadians * (1 - dampener) * Constants.kLoopSpeed * Math.PI));
+      Logger.recordOutput("Controlled Angle", controlledAngle);
+      ChassisSpeeds driverSpeeds =
+          swerveSubsystem.getDriveSpeeds(vx, vy, controlledAngle, dampener);
 
       if (joy.getLeftTriggerAxis() >= 0.1) {
         driverSpeeds = new ChassisSpeeds(0, 0, 0);

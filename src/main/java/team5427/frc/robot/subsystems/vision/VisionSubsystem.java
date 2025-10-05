@@ -27,6 +27,7 @@ import team5427.frc.robot.subsystems.vision.io.VisionIOInputsAutoLogged;
 import team5427.frc.robot.subsystems.vision.io.VisionIOPhoton;
 import team5427.frc.robot.subsystems.vision.io.VisionIOPhotonSim;
 import team5427.lib.detection.tuples.Tuple2Plus;
+import team5427.lib.drivers.TelemetryVerbosity;
 import team5427.lib.drivers.VirtualSubsystem;
 
 public class VisionSubsystem extends VirtualSubsystem {
@@ -47,7 +48,7 @@ public class VisionSubsystem extends VirtualSubsystem {
       Supplier<Pose2d> referencePoseSupplier,
       Supplier<Tuple2Plus<Double, Rotation2d>> referenceHeadingSupplier) {
     if (m_instance == null) {
-      m_instance = new VisionSubsystem(consumer, referencePoseSupplier, referenceHeadingSupplier);
+      m_instance = new VisionSubsystem(consumer, referencePoseSupplier, referenceHeadingSupplier, Constants.kVerbosityLevel);
     }
     return m_instance;
   }
@@ -64,7 +65,7 @@ public class VisionSubsystem extends VirtualSubsystem {
   private VisionSubsystem(
       VisionConsumer consumer,
       Supplier<Pose2d> referencePoseSupplier,
-      Supplier<Tuple2Plus<Double, Rotation2d>> referenceHeadingSupplier) {
+      Supplier<Tuple2Plus<Double, Rotation2d>> referenceHeadingSupplier, TelemetryVerbosity verbosity) {
     super();
     switch (Constants.currentMode) {
       case REAL:

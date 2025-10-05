@@ -24,10 +24,13 @@ import team5427.frc.robot.subsystems.vision.io.QuestNav;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
+  public TelemetryVerbosity 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
+    
+    
     try {
       Constants.config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
@@ -60,6 +63,7 @@ public class RobotContainer {
         RobotPose.getInstance()::getAdaptivePose,
         RobotPose.getInstance()::getGyroHeading);
     QuestNav.getInstance().setPose(new Pose2d(10 * Math.random(), 4, Rotation2d.kZero));
+
     buttonBindings();
   }
 

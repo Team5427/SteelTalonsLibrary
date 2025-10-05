@@ -20,8 +20,11 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import team5427.frc.robot.subsystems.Swerve.DrivingConstants;
+import team5427.frc.robot.subsystems.Swerve.SwerveConstants;
+import team5427.frc.robot.subsystems.intake.IntakeConstants;
 import team5427.frc.robot.subsystems.vision.io.QuestNav;
-import team5427.lib.drivers.SteelTalonsLogger;
+import team5427.lib.drivers.JoystickLogger;
 import team5427.lib.drivers.VirtualSubsystem;
 import team5427.lib.kinematics.shooter.projectiles.parabolic.AdjustedParabolicThread;
 
@@ -76,12 +79,21 @@ public class Robot extends LoggedRobot {
     AutoLogOutputManager.addPackage("team5427.lib");
 
     Logger.start();
-    SteelTalonsLogger.logJoystickData();
+    loadConstants();
+    JoystickLogger.logJoystickData();
     m_robotContainer = new RobotContainer();
-
     FollowPathCommand.warmupCommand().schedule();
     AdjustedParabolicThread.getInstance().setShouldCompute(true);
     AdjustedParabolicThread.getInstance().start();
+  }
+
+  private void loadConstants() {
+    System.out.println(SwerveConstants.class);
+    System.out.println(IntakeConstants.class);
+    System.out.println(DrivingConstants.class);
+    // loading a random LoggedTunableNumber
+    System.out.println(DrivingConstants.kRotationKp);
+    System.out.println(Superstructure.class);
   }
 
   /**
@@ -93,40 +105,33 @@ public class Robot extends LoggedRobot {
    */
   @Override
   public void robotPeriodic() {
-    // Switch thread to high priority to improve loop timing
-    // Threads.setCurrentThreadPriority(true, 99);
-
-    // Runs the Scheduler. This is responsible for polling buttons, adding
-    // newly-scheduled commands, running already-scheduled commands, removing
-    // finished or interrupted commands, and running subsystem periodic() methods.
-    // This must be called from the robot's periodic block in order for anything in
-    // the Command-based framework to work.
 
     CommandScheduler.getInstance().run();
     VirtualSubsystem.periodicAll();
     RobotPose.getInstance().log();
+    Superstructure.logStates();
     QuestNav.getInstance().processHeartbeat();
     QuestNav.getInstance().cleanupResponses();
-    Translation3d target =
-        new Pose3d(RobotPose.getInstance().getAdaptivePose())
-            .plus(new Transform3d(0, 0, 4, Rotation3d.kZero))
-            .getTranslation();
+    
+    if(Constants.currentMode == team5427.frc.robot.Constants.Mode.SIM){
+      Translation3d target =
+      new Pose3d(RobotPose.getInstance().getAdaptivePose())
+          .plus(new Transform3d(0, 0, 4, Rotation3d.kZero))
+          .getTranslation();
+      AdjustedParabolicThread.getInstance().setTarget(target);
 
-    AdjustedParabolicThread.getInstance().setTarget(target);
-
-    Logger.recordOutput(
-        "Rotation Output: ",
-        MathUtil.inputModulus(
-            AdjustedParabolicThread.getInstance().getOutputState().r.getDegrees(), 0, 360));
-    Logger.recordOutput(
-        "Velocity Output: ",
-        new Translation2d(
-            AdjustedParabolicThread.getInstance().getOutputState().t.in(MetersPerSecond),
-            AdjustedParabolicThread.getInstance().getOutputState().a.in(MetersPerSecond)));
-    Logger.recordOutput("Target", target);
-    Logger.recordOutput("Thread Interupted", AdjustedParabolicThread.interrupted());
-    // Return to normal thread priority
-    // Threads.setCurrentThreadPriority(false, 10);
+      Logger.recordOutput(
+          "Rotation Output: ",
+          MathUtil.inputModulus(
+              AdjustedParabolicThread.getInstance().getOutputState().r.getDegrees(), 0, 360));
+      Logger.recordOutput(
+          "Velocity Output: ",
+          new Translation2d(
+              AdjustedParabolicThread.getInstance().getOutputState().t.in(MetersPerSecond),
+              AdjustedParabolicThread.getInstance().getOutputState().a.in(MetersPerSecond)));
+      Logger.recordOutput("Target", target);
+      Logger.recordOutput("Thread Interupted", AdjustedParabolicThread.interrupted());
+    }
   }
 
   /** This function is called once each time the robot enters Disabled mode. */

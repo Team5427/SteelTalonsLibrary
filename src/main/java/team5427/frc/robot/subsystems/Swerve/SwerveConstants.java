@@ -5,18 +5,13 @@ import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
-import team5427.frc.robot.Constants;
 import team5427.lib.drivers.CANDeviceId;
 import team5427.lib.motors.MotorConfiguration;
 import team5427.lib.motors.MotorConfiguration.IdleState;
@@ -36,7 +31,7 @@ public final class SwerveConstants {
 
   public static final double kCoupleRatio = 3.125;
 
-  public static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.05);
+    public static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.05);
   public static final MomentOfInertia kDriveInertia = KilogramSquareMeters.of(0.01);
   // Simulated voltage necessary to overcome friction
   public static final Voltage kSteerFrictionVoltage = Volts.of(0.05);
@@ -90,46 +85,6 @@ public final class SwerveConstants {
 
   public static final CANDeviceId kPigeonCANId = new CANDeviceId(11, "*");
 
-  public static final double kRotationalKp = 1.4927;
-
-  public static final double kAutoAlignRotationalKp = 3.1;
-  public static double kTranslationalKp = 3.40;
-
-  public static final double kAutoAlignTranslationKp = 4.2;
-
-  public static ProfiledPIDController kRotationPIDController =
-      new ProfiledPIDController(
-          kAutoAlignRotationalKp, 0.0, 0.1, new Constraints(20 * Math.PI, 10 * Math.PI));
-
-  static {
-    kRotationPIDController.setTolerance(Units.degreesToRadians(1));
-    kRotationPIDController.enableContinuousInput(-Math.PI, Math.PI);
-  }
-
-  public static PIDController kTranslationXPIDController =
-      new PIDController(kAutoAlignTranslationKp, 0.0, 0.1);
-
-  public static PIDController kTranslationYPIDController =
-      new PIDController(kAutoAlignTranslationKp, 0.0, 0.0);
-
-  static {
-    kTranslationXPIDController.setTolerance(Units.inchesToMeters(.5));
-    kTranslationXPIDController.setTolerance(Units.inchesToMeters(.5));
-  }
-
-  public static ProfiledPIDController kTranslationPIDController =
-      new ProfiledPIDController(
-          kAutoAlignTranslationKp,
-          0.0,
-          0.0,
-          new Constraints(
-              kDriveMotorConfiguration.maxVelocity, //  * Math.PI,
-              kDriveMotorConfiguration.maxAcceleration),
-          Constants.kLoopSpeed);
-
-  public static final double kAutoAlignTranslationalMaxSpeed =
-      SwerveConstants.kDriveMotorConfiguration.maxVelocity * 0.2;
-
   public static final double kDrivetrainRadius =
       Math.max(
           Math.max(
@@ -161,8 +116,6 @@ public final class SwerveConstants {
   }
 
   static {
-    kRotationPIDController.enableContinuousInput(-Math.PI, Math.PI);
-    kRotationPIDController.setTolerance(Rotation2d.fromDegrees(2).getRadians());
     kSwerveUtilInstance.kDriveMotorIds[SwerveUtil.kFrontLeftModuleIdx] = new CANDeviceId(3, "*");
     kSwerveUtilInstance.kDriveMotorIds[SwerveUtil.kFrontRightModuleIdx] = new CANDeviceId(5, "*");
     kSwerveUtilInstance.kDriveMotorIds[SwerveUtil.kRearLeftModuleIdx] = new CANDeviceId(7, "*");

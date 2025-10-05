@@ -1,20 +1,29 @@
 package team5427.frc.robot;
 
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.littletonrobotics.junction.Logger;
 
 public final class Superstructure {
+  public static final String dashboardKey = "/Superstructure";
+
   public static enum SwerveStates {
-    DRIVING,
+    RAW_DRIVING,
+    CONTROLLED_DRIVING,
     AUTO_ALIGN,
     INTAKE_ASSISTANCE,
     AUTON,
     DISABLED;
 
     public static class SwerveTriggers {
-      public static final Trigger kDriving =
+      public static final Trigger kRawDriving =
           new Trigger(
               () -> {
-                return kSelectedSwerveState.equals(DRIVING);
+                return kSelectedSwerveState.equals(RAW_DRIVING);
+              });
+      public static final Trigger kControlledDriving =
+          new Trigger(
+              () -> {
+                return kSelectedSwerveState.equals(CONTROLLED_DRIVING);
               });
       public static final Trigger kAuto_Align =
           new Trigger(
@@ -75,4 +84,9 @@ public final class Superstructure {
   }
 
   public static IntakeStates kSelectedIntakeState = IntakeStates.STOWED;
+
+  public static void logStates() {
+    Logger.recordOutput(dashboardKey + "/" + "SwerveState", kSelectedSwerveState);
+    Logger.recordOutput(dashboardKey + "/" + "IntakeState", kSelectedIntakeState);
+  }
 }

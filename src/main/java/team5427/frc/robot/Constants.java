@@ -10,6 +10,7 @@ import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Frequency;
+import team5427.lib.drivers.TelemetryVerbosity;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -43,7 +44,7 @@ public final class Constants {
 
   public static final double kLoopSpeed = Units.millisecondsToSeconds(20);
 
-  public static final boolean kIsTuningMode = false;
+  public static final boolean kIsTuningMode = true;
 
   public static RobotConfig config;
 
@@ -52,4 +53,6 @@ public final class Constants {
     public static final int kOperatorJoystickPort = 1;
     public static final double kDriverControllerJoystickDeadzone = 0.0;
   }
+
+  public static final TelemetryVerbosity kVerbosityLevel = TelemetryVerbosity.HIGH;
 }

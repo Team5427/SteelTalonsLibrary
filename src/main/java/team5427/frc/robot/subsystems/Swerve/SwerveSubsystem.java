@@ -41,6 +41,7 @@ import team5427.frc.robot.subsystems.Swerve.gyro.GyroIOInputsAutoLogged;
 import team5427.frc.robot.subsystems.Swerve.gyro.GyroIOPigeon;
 import team5427.frc.robot.subsystems.Swerve.gyro.GyroIOSim;
 import team5427.frc.robot.subsystems.Swerve.io.talon.PhoenixOdometryThread;
+import team5427.lib.drivers.TelemetryVerbosity;
 import team5427.lib.systems.swerve.SteelTalonsDriveSpeeds;
 import team5427.lib.systems.swerve.SteelTalonsSwerve;
 import team5427.lib.systems.swerve.SwerveUtil;
@@ -50,7 +51,7 @@ public class SwerveSubsystem extends SubsystemBase
     implements SteelTalonsSwerve, SteelTalonsDriveSpeeds, DrivetrainSysId {
 
   public static final Lock odometryLock = new ReentrantLock();
-
+  public static TelemetryVerbosity telemetryVerbosity;
   private SwerveSetpointGenerator setpointGenerator;
   @AutoLogOutput private SwerveSetpoint setpoint;
   @AutoLogOutput private ChassisSpeeds currentChassisSpeeds;
@@ -81,15 +82,16 @@ public class SwerveSubsystem extends SubsystemBase
     return getInstance(null);
   }
 
-  public static SwerveSubsystem getInstance(OdometryConsumer consumer) {
+  public static SwerveSubsystem getInstance(OdometryConsumer consumer, TelemetryVerbosity verbosity) {
     if (m_instance == null) {
-      m_instance = new SwerveSubsystem(consumer);
+      m_instance = new SwerveSubsystem(consumer, verbosity);
     }
     return m_instance;
   }
 
-  private SwerveSubsystem(OdometryConsumer consumer) {
+  private SwerveSubsystem(OdometryConsumer consumer, TelemetryVerbosity verbosity) {
     swerveModules = new SwerveModule[SwerveUtil.kDefaultNumModules];
+    
     mapleSimConfig =
         DriveTrainSimulationConfig.Default()
             .withRobotMass(Kilogram.of(Constants.config.massKG))
@@ -119,6 +121,7 @@ public class SwerveSubsystem extends SubsystemBase
         swerveModules[SwerveUtil.kRearRightModuleIdx] =
             new SwerveModule(SwerveUtil.kRearRightModuleIdx);
         gyro = new GyroIOPigeon();
+        
         break;
       case REPLAY:
         swerveModules[SwerveUtil.kFrontLeftModuleIdx] =
@@ -340,7 +343,7 @@ public class SwerveSubsystem extends SubsystemBase
     yInput *= (1 - dampenAmount);
 
     double calculatedOmega =
-        SwerveConstants.kRotationPIDController.calculate(
+        DrivingConstants.kRotationController.calculate(
             RobotPose.getInstance().getAdaptivePose().getRotation().getRadians(),
             targetOmega.getRadians());
 

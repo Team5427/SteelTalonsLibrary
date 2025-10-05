@@ -11,7 +11,8 @@ import team5427.frc.robot.Constants.DriverConstants;
 import team5427.frc.robot.RobotPose;
 import team5427.frc.robot.Superstructure;
 import team5427.frc.robot.Superstructure.SwerveStates;
-import team5427.frc.robot.commands.chassis.ChassisMovement;
+import team5427.frc.robot.commands.chassis.ControlledChassisMovement;
+import team5427.frc.robot.commands.chassis.RawChassisMovement;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
 import team5427.frc.robot.subsystems.vision.io.QuestNav;
 
@@ -32,7 +33,6 @@ public class PilotingControls {
 
   /** Made private to prevent multiple calls to this method */
   private void initalizeTriggers() {
-    // SwerveSubsystem.getInstance().setDefaultCommand(new ChassisMovement(joy));
 
     disabledTrigger =
         new Trigger(
@@ -45,6 +45,19 @@ public class PilotingControls {
             () -> {
               return DriverStation.isAutonomous();
             });
+    joy.leftBumper()
+        .toggleOnTrue(
+            new InstantCommand(
+                () -> {
+                  Superstructure.kSelectedSwerveState =
+                      Superstructure.SwerveStates.CONTROLLED_DRIVING;
+                }))
+        .toggleOnFalse(
+            new InstantCommand(
+                () -> {
+                  Superstructure.kSelectedSwerveState = Superstructure.SwerveStates.RAW_DRIVING;
+                }));
+
     autonTrigger
         .onTrue(
             new InstantCommand(
@@ -54,7 +67,7 @@ public class PilotingControls {
         .onFalse(
             new InstantCommand(
                 () -> {
-                  Superstructure.kSelectedSwerveState = SwerveStates.DRIVING;
+                  Superstructure.kSelectedSwerveState = SwerveStates.RAW_DRIVING;
                 }));
 
     disabledTrigger
@@ -68,11 +81,13 @@ public class PilotingControls {
         .onTrue(
             new InstantCommand(
                 () -> {
-                  Superstructure.kSelectedSwerveState = SwerveStates.DRIVING;
+                  Superstructure.kSelectedSwerveState = SwerveStates.RAW_DRIVING;
                 }));
 
-    Superstructure.SwerveStates.SwerveTriggers.kDriving.whileTrue(new ChassisMovement(joy));
-    // SwerveSubsystem.getInstance().setDefaultCommand(new ChassisMovement(joy));
+    Superstructure.SwerveStates.SwerveTriggers.kRawDriving.whileTrue(new RawChassisMovement(joy));
+    Superstructure.SwerveStates.SwerveTriggers.kControlledDriving.whileTrue(
+        new ControlledChassisMovement(joy));
+    // SwerveSubsystem.getInstance().setDefaultCommand(new RawChassisMovement(joy));
     joy.a()
         .onTrue(
             new InstantCommand(
@@ -80,9 +95,6 @@ public class PilotingControls {
                         QuestNav.getInstance()
                             .setPose(new Pose2d(10 * Math.random(), 4, Rotation2d.kZero)))
                 .ignoringDisable(true));
-
-    // Example Coral Placement Code
-    // TODO: delete these code for your own project
     if (Constants.currentMode == Constants.Mode.SIM) {
 
       joy.y()
