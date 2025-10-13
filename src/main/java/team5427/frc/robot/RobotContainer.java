@@ -56,15 +56,15 @@ public class RobotContainer {
         SimulatedArena.getInstance()
             .addDriveTrainSimulation(SwerveSubsystem.getInstance(telemetryLevel).getKDriveSimulation());
         SimulatedArena.getInstance().clearGamePieces();
-        IntakeSubsystem.getInstance(SwerveSubsystem.getInstance(telemetryLevel)::getKDriveSimulation);
+        IntakeSubsystem.getInstance(SwerveSubsystem.getInstance(telemetryLevel)::getKDriveSimulation, telemetryLevel);
         break;
       default:
         break;
     }
     VisionSubsystem.getInstance(
         RobotPose.getInstance()::addVisionMeasurement,
-        RobotPose.getInstance()::getAdaptivePose,
-        RobotPose.getInstance()::getGyroHeading);
+        () -> RobotPose.getInstance().getAdaptivePose(telemetryLevel),
+        () -> RobotPose.getInstance().getGyroHeading(telemetryLevel), telemetryLevel);
     QuestNav.getInstance().setPose(new Pose2d(10 * Math.random(), 4, Rotation2d.kZero));
 
     buttonBindings();
