@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.Temperature;
 import edu.wpi.first.units.measure.Voltage;
 import team5427.frc.robot.Constants;
 import team5427.frc.robot.subsystems.intake.IntakeConstants;
+import team5427.lib.drivers.TelemetryVerbosity;
 import team5427.lib.motors.MagicSteelTalonFX;
 import team5427.lib.motors.SteelTalonFX;
 
@@ -42,7 +43,7 @@ public class IntakeIOMagicTalonFX implements IntakeIO {
   private boolean isRollerMotorDisabled = false;
   private boolean isPivotMotorDisabled = false;
 
-  public IntakeIOMagicTalonFX() {
+  public IntakeIOMagicTalonFX(TelemetryVerbosity telemetryVerbosity) {
     rollerMotor = new SteelTalonFX(IntakeConstants.kRollerMotorCanId);
     pivotMotor = new MagicSteelTalonFX(IntakeConstants.kPivotMotorCanId);
 

@@ -15,24 +15,25 @@ import team5427.frc.robot.commands.chassis.ControlledChassisMovement;
 import team5427.frc.robot.commands.chassis.RawChassisMovement;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
 import team5427.frc.robot.subsystems.vision.io.QuestNav;
+import team5427.lib.drivers.TelemetryVerbosity;
 
 public class PilotingControls {
   private CommandXboxController joy;
   private Trigger autonTrigger;
   private Trigger disabledTrigger;
 
-  public PilotingControls() {
+  public PilotingControls(TelemetryVerbosity tv) {
     joy = new CommandXboxController(DriverConstants.kDriverJoystickPort);
-    initalizeTriggers();
+    initalizeTriggers(tv);
   }
 
-  public PilotingControls(CommandXboxController joy) {
+  public PilotingControls(CommandXboxController joy, TelemetryVerbosity tv) {
     this.joy = joy;
-    initalizeTriggers();
+    initalizeTriggers(tv);
   }
 
   /** Made private to prevent multiple calls to this method */
-  private void initalizeTriggers() {
+  private void initalizeTriggers(TelemetryVerbosity tv) {
 
     disabledTrigger =
         new Trigger(
@@ -84,9 +85,9 @@ public class PilotingControls {
                   Superstructure.kSelectedSwerveState = SwerveStates.RAW_DRIVING;
                 }));
 
-    Superstructure.SwerveStates.SwerveTriggers.kRawDriving.whileTrue(new RawChassisMovement(joy));
+    Superstructure.SwerveStates.SwerveTriggers.kRawDriving.whileTrue(new RawChassisMovement(joy, tv));
     Superstructure.SwerveStates.SwerveTriggers.kControlledDriving.whileTrue(
-        new ControlledChassisMovement(joy));
+        new ControlledChassisMovement(joy, tv));
     // SwerveSubsystem.getInstance().setDefaultCommand(new RawChassisMovement(joy));
     joy.a()
         .onTrue(
@@ -102,19 +103,19 @@ public class PilotingControls {
               new InstantCommand(
                   () -> {
                     Pose2d pose =
-                        SwerveSubsystem.getInstance()
+                        SwerveSubsystem.getInstance(tv)
                             .getKDriveSimulation()
                             .getSimulatedDriveTrainPose();
 
-                    SwerveSubsystem.getInstance().resetGyro(Rotation2d.kZero);
+                    SwerveSubsystem.getInstance(tv).resetGyro(Rotation2d.kZero);
 
                     pose =
                         new Pose2d(
                             pose.getX(),
                             pose.getY(),
-                            SwerveSubsystem.getInstance().getGyroRotation());
+                            SwerveSubsystem.getInstance(tv).getGyroRotation());
                     RobotPose.getInstance().resetHeading(Rotation2d.kZero);
-                    SwerveSubsystem.getInstance()
+                    SwerveSubsystem.getInstance(tv)
                         .getKDriveSimulation()
                         .setSimulationWorldPose(pose);
                   }));
@@ -170,9 +171,9 @@ public class PilotingControls {
           .onTrue(
               new InstantCommand(
                   () -> {
-                    SwerveSubsystem.getInstance().resetGyro(Rotation2d.kZero);
+                    SwerveSubsystem.getInstance(tv).resetGyro(Rotation2d.kZero);
                     RobotPose.getInstance()
-                        .resetHeading(SwerveSubsystem.getInstance().getGyroRotation());
+                        .resetHeading(SwerveSubsystem.getInstance(tv).getGyroRotation());
                   }));
     }
   }

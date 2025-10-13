@@ -8,22 +8,23 @@ import team5427.frc.robot.Superstructure.IntakeStates;
 import team5427.frc.robot.commands.intake.IntakeIntaking;
 import team5427.frc.robot.commands.intake.IntakeStowed;
 import team5427.frc.robot.subsystems.intake.IntakeSubsystem;
+import team5427.lib.drivers.TelemetryVerbosity;
 
 public class OperatorControls {
   private CommandXboxController joy;
 
-  public OperatorControls() {
+  public OperatorControls(TelemetryVerbosity tv) {
     joy = new CommandXboxController(DriverConstants.kOperatorJoystickPort);
-    initalizeTriggers();
+    initalizeTriggers(tv);
   }
 
-  public OperatorControls(CommandXboxController joy) {
+  public OperatorControls(CommandXboxController joy, TelemetryVerbosity tv) {
     this.joy = joy;
-    initalizeTriggers();
+    initalizeTriggers(tv);
   }
 
   /** Made private to prevent multiple calls to this method */
-  private void initalizeTriggers() {
+  private void initalizeTriggers(TelemetryVerbosity tv) {
     joy.leftTrigger()
         .whileTrue(
             new InstantCommand(
@@ -38,23 +39,23 @@ public class OperatorControls {
 
     Superstructure.IntakeStates.IntakeTriggers.kIntaking
         .and(Superstructure.SwerveStates.SwerveTriggers.kIntake_Assistance.negate())
-        .whileTrue(new IntakeIntaking());
+        .whileTrue(new IntakeIntaking(tv));
 
-    Superstructure.IntakeStates.IntakeTriggers.kStowed.whileTrue(new IntakeStowed());
+    Superstructure.IntakeStates.IntakeTriggers.kStowed.whileTrue(new IntakeStowed(tv));
 
     Superstructure.IntakeStates.IntakeTriggers.kDisabled
         .whileTrue(
             new InstantCommand(
                 () -> {
-                  IntakeSubsystem.getInstance().disablePivotMotor(true);
-                  IntakeSubsystem.getInstance().disableRollerMotor(true);
+                  IntakeSubsystem.getInstance(tv).disablePivotMotor(true);
+                  IntakeSubsystem.getInstance(tv).disableRollerMotor(true);
                 },
-                IntakeSubsystem.getInstance()))
+                IntakeSubsystem.getInstance(tv)))
         .onFalse(
             new InstantCommand(
                 () -> {
-                  IntakeSubsystem.getInstance().disablePivotMotor(false);
-                  IntakeSubsystem.getInstance().disableRollerMotor(false);
+                  IntakeSubsystem.getInstance(tv).disablePivotMotor(false);
+                  IntakeSubsystem.getInstance(tv).disableRollerMotor(false);
                 }));
   }
 }

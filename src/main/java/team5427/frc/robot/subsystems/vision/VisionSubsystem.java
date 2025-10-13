@@ -128,9 +128,9 @@ public class VisionSubsystem extends VirtualSubsystem {
   }
 
   @Override
-  public void periodic() {
+  public void periodic(TelemetryVerbosity tv) {
     for (int i = 0; i < io.length; i++) {
-      io[i].updateInputs(inputsAutoLogged[i]);
+      io[i].updateInputs(inputsAutoLogged[i], tv);
       Logger.processInputs("Vision/Camera " + Integer.toString(i), inputsAutoLogged[i]);
     }
 
@@ -161,7 +161,7 @@ public class VisionSubsystem extends VirtualSubsystem {
                     && observation
                             .pose()
                             .toPose2d()
-                            .relativeTo(RobotPose.getInstance().getAdaptivePose())
+                            .relativeTo(RobotPose.getInstance().getAdaptivePose(tv))
                             .getTranslation()
                             .getNorm()
                         > SwerveConstants.kDriveMotorConfiguration.maxVelocity

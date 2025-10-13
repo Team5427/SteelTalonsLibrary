@@ -5,6 +5,8 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import team5427.lib.drivers.TelemetryVerbosity;
+
 import org.littletonrobotics.junction.AutoLog;
 
 public interface VisionIO {
@@ -34,7 +36,7 @@ public interface VisionIO {
     QUEST_NAV,
   }
 
-  public void updateInputs(VisionIOInputs inputs);
+  public void updateInputs(VisionIOInputs inputs, TelemetryVerbosity tv);
 
   public default void setReferencePose(Pose3d resetPose) {}
 

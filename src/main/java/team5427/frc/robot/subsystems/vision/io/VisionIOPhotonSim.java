@@ -2,6 +2,7 @@ package team5427.frc.robot.subsystems.vision.io;
 
 import static edu.wpi.first.units.Units.Meter;
 
+import edu.wpi.first.cscore.CameraServerJNI.TelemetryKind;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -26,6 +27,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 import team5427.frc.robot.subsystems.vision.VisionConstants;
 import team5427.lib.detection.tuples.Tuple2Plus;
+import team5427.lib.drivers.TelemetryVerbosity;
 
 public class VisionIOPhotonSim implements VisionIO {
 
@@ -64,7 +66,7 @@ public class VisionIOPhotonSim implements VisionIO {
   }
 
   @Override
-  public void updateInputs(VisionIOInputs inputs) {
+  public void updateInputs(VisionIOInputs inputs, TelemetryVerbosity tv) {
     inputs.connected = sim.getCamera().isConnected();
     photonPoseEstimator.setReferencePose(getReferencePose.get());
     visionSystemSim.update(getReferencePose.get());

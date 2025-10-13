@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.littletonrobotics.junction.Logger;
 import team5427.frc.robot.subsystems.vision.VisionConstants;
 import team5427.lib.detection.CoordinateUtils;
+import team5427.lib.drivers.TelemetryVerbosity;
 
 public class VisionIOQuestNav implements VisionIO {
 
@@ -17,7 +18,7 @@ public class VisionIOQuestNav implements VisionIO {
   }
 
   @Override
-  public void updateInputs(VisionIOInputs inputs) {
+  public void updateInputs(VisionIOInputs inputs, TelemetryVerbosity tv) {
     inputs.connected = questNav.getConnected();
     ArrayList<PoseObservation> questPoseObservation = new ArrayList<>();
     questPoseObservation.add(

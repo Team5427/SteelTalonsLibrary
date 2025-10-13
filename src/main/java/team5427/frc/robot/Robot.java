@@ -25,6 +25,7 @@ import team5427.frc.robot.subsystems.Swerve.SwerveConstants;
 import team5427.frc.robot.subsystems.intake.IntakeConstants;
 import team5427.frc.robot.subsystems.vision.io.QuestNav;
 import team5427.lib.drivers.JoystickLogger;
+import team5427.lib.drivers.TelemetryVerbosity;
 import team5427.lib.drivers.VirtualSubsystem;
 import team5427.lib.kinematics.shooter.projectiles.parabolic.AdjustedParabolicThread;
 
@@ -107,7 +108,7 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
 
     CommandScheduler.getInstance().run();
-    VirtualSubsystem.periodicAll();
+    VirtualSubsystem.periodicAll(m_robotContainer.getTelemetry());
     RobotPose.getInstance().log();
     Superstructure.logStates();
     QuestNav.getInstance().processHeartbeat();
@@ -115,7 +116,7 @@ public class Robot extends LoggedRobot {
     
     if(Constants.currentMode == team5427.frc.robot.Constants.Mode.SIM){
       Translation3d target =
-      new Pose3d(RobotPose.getInstance().getAdaptivePose())
+      new Pose3d(RobotPose.getInstance().getAdaptivePose(m_robotContainer.telemetryLevel))
           .plus(new Transform3d(0, 0, 4, Rotation3d.kZero))
           .getTranslation();
       AdjustedParabolicThread.getInstance().setTarget(target);

@@ -5,6 +5,8 @@
 package team5427.frc.robot;
 
 import com.pathplanner.lib.config.RobotConfig;
+
+import edu.wpi.first.cscore.CameraServerJNI.TelemetryKind;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,6 +18,7 @@ import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
 import team5427.frc.robot.subsystems.intake.IntakeSubsystem;
 import team5427.frc.robot.subsystems.vision.VisionSubsystem;
 import team5427.frc.robot.subsystems.vision.io.QuestNav;
+import team5427.lib.drivers.TelemetryVerbosity;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -24,7 +27,7 @@ import team5427.frc.robot.subsystems.vision.io.QuestNav;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  public TelemetryVerbosity 
+  public TelemetryVerbosity telemetryLevel = TelemetryVerbosity.HIGH;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -41,19 +44,19 @@ public class RobotContainer {
 
     switch (Constants.currentMode) {
       case REAL:
-        SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement);
-        IntakeSubsystem.getInstance();
+        SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement, telemetryLevel);
+        IntakeSubsystem.getInstance(telemetryLevel);
         break;
       case REPLAY:
-        SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement);
-        IntakeSubsystem.getInstance();
+        SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement, telemetryLevel);
+        IntakeSubsystem.getInstance(telemetryLevel);
         break;
       case SIM:
-        SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement);
+        SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement, telemetryLevel);
         SimulatedArena.getInstance()
-            .addDriveTrainSimulation(SwerveSubsystem.getInstance().getKDriveSimulation());
+            .addDriveTrainSimulation(SwerveSubsystem.getInstance(telemetryLevel).getKDriveSimulation());
         SimulatedArena.getInstance().clearGamePieces();
-        IntakeSubsystem.getInstance(SwerveSubsystem.getInstance()::getKDriveSimulation);
+        IntakeSubsystem.getInstance(SwerveSubsystem.getInstance(telemetryLevel)::getKDriveSimulation);
         break;
       default:
         break;
@@ -68,8 +71,8 @@ public class RobotContainer {
   }
 
   private void buttonBindings() {
-    new PilotingControls();
-    new OperatorControls();
+    new PilotingControls(telemetryLevel);
+    new OperatorControls(telemetryLevel);
   }
 
   /**
@@ -86,9 +89,9 @@ public class RobotContainer {
     if (Constants.currentMode != Constants.Mode.SIM) return;
     Pose2d pose = new Pose2d(3, 3, Rotation2d.kZero);
 
-    SwerveSubsystem.getInstance().getKDriveSimulation().setSimulationWorldPose(pose);
+    SwerveSubsystem.getInstance(telemetryLevel).getKDriveSimulation().setSimulationWorldPose(pose);
     RobotPose.getInstance().resetAllPose(pose);
-    SwerveSubsystem.getInstance().resetGyro(Rotation2d.kZero);
+    SwerveSubsystem.getInstance(telemetryLevel).resetGyro(Rotation2d.kZero);
     SimulatedArena.getInstance().resetFieldForAuto();
   }
 
@@ -98,10 +101,13 @@ public class RobotContainer {
     SimulatedArena.getInstance().simulationPeriodic();
     Logger.recordOutput(
         "FieldSimulation/RobotPosition",
-        SwerveSubsystem.getInstance().getKDriveSimulation().getSimulatedDriveTrainPose());
+        SwerveSubsystem.getInstance(telemetryLevel).getKDriveSimulation().getSimulatedDriveTrainPose());
     Logger.recordOutput(
         "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
     Logger.recordOutput(
         "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+  }
+  public TelemetryVerbosity getTelemetry(){
+    return telemetryLevel;
   }
 }

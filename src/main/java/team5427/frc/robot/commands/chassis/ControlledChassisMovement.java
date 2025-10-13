@@ -12,6 +12,7 @@ import team5427.frc.robot.Constants;
 import team5427.frc.robot.Constants.DriverConstants;
 import team5427.frc.robot.subsystems.Swerve.SwerveConstants;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
+import team5427.lib.drivers.TelemetryVerbosity;
 
 public class ControlledChassisMovement extends Command {
 
@@ -23,8 +24,8 @@ public class ControlledChassisMovement extends Command {
 
   private Rotation2d controlledAngle;
 
-  public ControlledChassisMovement(CommandXboxController driverJoystick) {
-    swerveSubsystem = SwerveSubsystem.getInstance();
+  public ControlledChassisMovement(CommandXboxController driverJoystick, TelemetryVerbosity telemetryLevel) {
+    swerveSubsystem = SwerveSubsystem.getInstance(telemetryLevel);
     joy = driverJoystick;
     translationJoystick = new TunedJoystick(joy.getHID());
     translationJoystick.useResponseCurve(ResponseCurve.LINEAR);

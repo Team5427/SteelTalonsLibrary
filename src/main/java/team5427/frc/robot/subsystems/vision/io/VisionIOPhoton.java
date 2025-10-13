@@ -24,6 +24,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
 import team5427.frc.robot.subsystems.vision.VisionConstants;
 import team5427.lib.detection.tuples.Tuple2Plus;
+import team5427.lib.drivers.TelemetryVerbosity;
 
 public class VisionIOPhoton implements VisionIO {
 
@@ -60,7 +61,7 @@ public class VisionIOPhoton implements VisionIO {
   }
 
   @Override
-  public void updateInputs(VisionIOInputs inputs) {
+  public void updateInputs(VisionIOInputs inputs, TelemetryVerbosity tv) {
     inputs.connected = cam.isConnected();
     List<PhotonPipelineResult> results = cam.getAllUnreadResults();
     List<PoseObservation> obs = new LinkedList<PoseObservation>();
@@ -95,7 +96,7 @@ public class VisionIOPhoton implements VisionIO {
       } else {
         Optional<EstimatedRobotPose> pose = photonPoseEstimator.update(results.get(i));
         photonPoseEstimator.addHeadingData(
-            Timer.getTimestamp(), SwerveSubsystem.getInstance().getGyroRotation());
+            Timer.getTimestamp(), SwerveSubsystem.getInstance(tv).getGyroRotation());
         List<PhotonTrackedTarget> targets = results.get(i).getTargets();
         for (PhotonTrackedTarget target : targets) {
           Pose3d robotPose = new Pose3d();

@@ -64,7 +64,7 @@ public class SwerveSubsystem extends SubsystemBase
   private GyroIO gyro;
   private GyroIOInputsAutoLogged gyroInputs;
   private DriveFeedforwards driveFeedforwards;
-
+  TelemetryVerbosity tv = TelemetryVerbosity.HIGH;
   @Getter private SwerveDriveSimulation kDriveSimulation;
 
   public static DriveTrainSimulationConfig mapleSimConfig;
@@ -78,8 +78,8 @@ public class SwerveSubsystem extends SubsystemBase
 
   private static SwerveSubsystem m_instance;
 
-  public static SwerveSubsystem getInstance() {
-    return getInstance(null);
+  public static SwerveSubsystem getInstance(TelemetryVerbosity v) {
+    return getInstance(null, v);
   }
 
   public static SwerveSubsystem getInstance(OdometryConsumer consumer, TelemetryVerbosity verbosity) {
@@ -344,7 +344,7 @@ public class SwerveSubsystem extends SubsystemBase
 
     double calculatedOmega =
         DrivingConstants.kRotationController.calculate(
-            RobotPose.getInstance().getAdaptivePose().getRotation().getRadians(),
+            RobotPose.getInstance().getAdaptivePose(tv).getRotation().getRadians(),
             targetOmega.getRadians());
 
     ChassisSpeeds rawSpeeds =

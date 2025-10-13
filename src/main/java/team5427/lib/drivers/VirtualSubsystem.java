@@ -10,11 +10,11 @@ public abstract class VirtualSubsystem {
     subsystems.add(this);
   }
 
-  public static void periodicAll() {
+  public static void periodicAll(TelemetryVerbosity tv) {
     for (VirtualSubsystem subsystem : subsystems) {
-      subsystem.periodic();
+      subsystem.periodic( tv);
     }
   }
 
-  public abstract void periodic();
+  public abstract void periodic(TelemetryVerbosity tv);
 }

@@ -1,5 +1,6 @@
 package team5427.frc.robot;
 
+import edu.wpi.first.cscore.CameraServerJNI.TelemetryKind;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -17,6 +18,7 @@ import team5427.frc.robot.subsystems.Swerve.SwerveConstants;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
 import team5427.frc.robot.subsystems.vision.io.QuestNav;
 import team5427.lib.detection.tuples.Tuple2Plus;
+import team5427.lib.drivers.TelemetryVerbosity;
 
 public class RobotPose {
   public SwerveDriveOdometry odometry;
@@ -109,11 +111,10 @@ public class RobotPose {
     // SwerveSubsystem.getInstance().resetGyro(resetPose.getRotation());
   }
 
-  public void resetAllPose(
-      Pose2d resetPose, SwerveModulePosition[] modulePositions, Rotation2d gyroAngle) {
+  public void resetAllPose(Pose2d resetPose, SwerveModulePosition[] modulePositions, Rotation2d gyroAngle, TelemetryVerbosity tv) {
     resetOdometryPose(resetPose, modulePositions, gyroAngle);
     resetEstimatedPose(resetPose, modulePositions, gyroAngle);
-    SwerveSubsystem.getInstance().resetGyro(resetPose.getRotation());
+    SwerveSubsystem.getInstance(tv).resetGyro(resetPose.getRotation());
   }
 
   public void resetOdometryPose(Pose2d resetPose) {
@@ -134,9 +135,9 @@ public class RobotPose {
     this.poseEstimator.resetPosition(gyroAngle, modulePositions, resetPose);
   }
 
-  public Pose2d getAdaptivePose() {
+  public Pose2d getAdaptivePose(TelemetryVerbosity tv) {
     if (Constants.currentMode.equals(Mode.SIM)) {
-      return SwerveSubsystem.getInstance().getKDriveSimulation().getSimulatedDriveTrainPose();
+      return SwerveSubsystem.getInstance(tv).getKDriveSimulation().getSimulatedDriveTrainPose();
     }
     return getEstimatedPose();
   }
@@ -146,9 +147,9 @@ public class RobotPose {
     this.poseEstimator.resetRotation(heading);
   }
 
-  public Tuple2Plus<Double, Rotation2d> getGyroHeading() {
+  public Tuple2Plus<Double, Rotation2d> getGyroHeading(TelemetryVerbosity tv) {
     return new Tuple2Plus<Double, Rotation2d>(
-        Timer.getTimestamp(), SwerveSubsystem.getInstance().getGyroRotationAdjusted());
+        Timer.getTimestamp(), SwerveSubsystem.getInstance(tv).getGyroRotationAdjusted());
   }
 
   public void log() {
