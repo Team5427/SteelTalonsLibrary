@@ -10,6 +10,7 @@ import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Frequency;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import team5427.lib.drivers.TelemetryVerbosity;
 
 /**
@@ -42,6 +43,24 @@ public final class Constants {
     REPLAY
   }
 
+  public static class ModeTriggers {
+    public static final Trigger kReal =
+        new Trigger(
+            () -> {
+              return currentMode.equals(Mode.REAL);
+            });
+    public static final Trigger kSim =
+        new Trigger(
+            () -> {
+              return currentMode.equals(Mode.SIM);
+            });
+    public static final Trigger kReplay =
+        new Trigger(
+            () -> {
+              return currentMode.equals(Mode.REPLAY);
+            });
+  }
+
   public static final double kLoopSpeed = Units.millisecondsToSeconds(20);
 
   public static final boolean kIsTuningMode = true;
@@ -52,6 +71,7 @@ public final class Constants {
     public static final int kDriverJoystickPort = 0;
     public static final int kOperatorJoystickPort = 1;
     public static final double kDriverControllerJoystickDeadzone = 0.0;
+    public static final double kDriverControllerRotationalControlJoystickDeadzone = 0.05;
   }
 
   public static final TelemetryVerbosity kVerbosityLevel = TelemetryVerbosity.HIGH;

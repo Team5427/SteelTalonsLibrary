@@ -25,7 +25,7 @@ public interface IntakeIO {
     public Rotation2d pivotMotorRotation = Rotation2d.kZero;
     public AngularVelocity pivotMotorAngularVelocity = RotationsPerSecond.of(0.0);
     public AngularAcceleration pivotMotorAngularAcceleration = RotationsPerSecondPerSecond.of(0.0);
-    
+
     public LinearVelocity rollerMotorLinearVelocity = MetersPerSecond.of(0.0);
     public LinearAcceleration rollerMotorLinearAcceleration = MetersPerSecondPerSecond.of(0.0);
     public AngularVelocity rollerMotorAngularVelocity = RotationsPerSecond.of(0.0);

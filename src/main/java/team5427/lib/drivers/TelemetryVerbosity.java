@@ -1,13 +1,9 @@
 package team5427.lib.drivers;
-public enum TelemetryVerbosity
-{
+
+public enum TelemetryVerbosity {
   LOW,
-  /**
-   * Medium telemetry data, swerve directory
-   */
+  /** Medium telemetry data, swerve directory */
   MEDIUM,
-  /**
-   * Info level + field info
-   */
+  /** Info level + field info */
   HIGH
 }

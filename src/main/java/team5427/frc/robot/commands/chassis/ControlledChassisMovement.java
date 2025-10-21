@@ -33,9 +33,15 @@ public class ControlledChassisMovement extends Command {
     rotationJoystick.useResponseCurve(ResponseCurve.LINEAR);
 
     translationJoystick.setDeadzone(DriverConstants.kDriverControllerJoystickDeadzone);
-    rotationJoystick.setDeadzone(DriverConstants.kDriverControllerJoystickDeadzone);
+    rotationJoystick.setDeadzone(
+        DriverConstants.kDriverControllerRotationalControlJoystickDeadzone);
     addRequirements(swerveSubsystem);
 
+    controlledAngle = swerveSubsystem.getGyroRotationAdjusted();
+  }
+
+  @Override
+  public void initialize() {
     controlledAngle = swerveSubsystem.getGyroRotationAdjusted();
   }
 

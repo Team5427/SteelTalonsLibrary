@@ -12,6 +12,7 @@ import team5427.frc.robot.RobotPose;
 import team5427.frc.robot.Superstructure;
 import team5427.frc.robot.Superstructure.SwerveStates;
 import team5427.frc.robot.commands.chassis.ControlledChassisMovement;
+import team5427.frc.robot.commands.chassis.MoveChassisToPose;
 import team5427.frc.robot.commands.chassis.RawChassisMovement;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
 import team5427.frc.robot.subsystems.vision.io.QuestNav;
@@ -45,12 +46,25 @@ public class PilotingControls {
             () -> {
               return DriverStation.isAutonomous();
             });
-    joy.leftBumper()
+    DriverProfiles.DriverTriggers.kDualAE
+        .and(joy.leftBumper())
         .toggleOnTrue(
             new InstantCommand(
                 () -> {
                   Superstructure.kSelectedSwerveState =
                       Superstructure.SwerveStates.CONTROLLED_DRIVING;
+                }))
+        .toggleOnFalse(
+            new InstantCommand(
+                () -> {
+                  Superstructure.kSelectedSwerveState = Superstructure.SwerveStates.RAW_DRIVING;
+                }));
+    DriverProfiles.DriverTriggers.kDualAE
+        .and(joy.rightBumper())
+        .toggleOnTrue(
+            new InstantCommand(
+                () -> {
+                  Superstructure.kSelectedSwerveState = Superstructure.SwerveStates.AUTO_ALIGN;
                 }))
         .toggleOnFalse(
             new InstantCommand(
@@ -84,96 +98,58 @@ public class PilotingControls {
                   Superstructure.kSelectedSwerveState = SwerveStates.RAW_DRIVING;
                 }));
 
-    Superstructure.SwerveStates.SwerveTriggers.kRawDriving.whileTrue(new RawChassisMovement(joy));
-    Superstructure.SwerveStates.SwerveTriggers.kControlledDriving.whileTrue(
-        new ControlledChassisMovement(joy));
+    Superstructure.SwerveStates.SwerveTriggers.kRawDriving
+        .and(autonTrigger.negate())
+        .and(disabledTrigger.negate())
+        .whileTrue(new RawChassisMovement(joy));
     // SwerveSubsystem.getInstance().setDefaultCommand(new RawChassisMovement(joy));
+    Superstructure.SwerveStates.SwerveTriggers.kControlledDriving
+        .and(autonTrigger.negate())
+        .and(disabledTrigger.negate())
+        .whileTrue(new ControlledChassisMovement(joy));
+    Superstructure.SwerveStates.SwerveTriggers.kAuto_Align
+        .and(disabledTrigger.negate())
+        .whileTrue(new MoveChassisToPose(joy, new Pose2d(5, 5.5, Rotation2d.k180deg)));
     joy.a()
+        .and(Constants.ModeTriggers.kSim)
         .onTrue(
             new InstantCommand(
                     () ->
                         QuestNav.getInstance()
                             .setPose(new Pose2d(10 * Math.random(), 4, Rotation2d.kZero)))
                 .ignoringDisable(true));
-    if (Constants.currentMode == Constants.Mode.SIM) {
 
-      joy.y()
-          .onTrue(
-              new InstantCommand(
-                  () -> {
-                    Pose2d pose =
-                        SwerveSubsystem.getInstance()
-                            .getKDriveSimulation()
-                            .getSimulatedDriveTrainPose();
+    DriverProfiles.DriverTriggers.kDualAE
+        .and(joy.y())
+        .and(Constants.ModeTriggers.kSim)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  Pose2d pose =
+                      SwerveSubsystem.getInstance()
+                          .getKDriveSimulation()
+                          .getSimulatedDriveTrainPose();
 
-                    SwerveSubsystem.getInstance().resetGyro(Rotation2d.kZero);
+                  SwerveSubsystem.getInstance().resetGyro(Rotation2d.kZero);
 
-                    pose =
-                        new Pose2d(
-                            pose.getX(),
-                            pose.getY(),
-                            SwerveSubsystem.getInstance().getGyroRotation());
-                    RobotPose.getInstance().resetHeading(Rotation2d.kZero);
-                    SwerveSubsystem.getInstance()
-                        .getKDriveSimulation()
-                        .setSimulationWorldPose(pose);
-                  }));
+                  pose =
+                      new Pose2d(
+                          pose.getX(),
+                          pose.getY(),
+                          SwerveSubsystem.getInstance().getGyroRotation());
+                  RobotPose.getInstance().resetHeading(Rotation2d.kZero);
+                  SwerveSubsystem.getInstance().getKDriveSimulation().setSimulationWorldPose(pose);
+                }));
 
-      // L4 placement
-      //   joy.y()
-      //       .onTrue(
-      //           Commands.runOnce(
-      //               () ->
-      //                   SimulatedArena.getInstance()
-      //                       .addGamePieceProjectile(
-      //                           new ReefscapeCoralOnFly(
-      //                               SwerveSubsystem.getInstance()
-      //                                   .getKDriveSimulation()
-      //                                   .getSimulatedDriveTrainPose()
-      //                                   .getTranslation(),
-      //                               new Translation2d(0.4, 0),
-      //                               SwerveSubsystem.getInstance()
-      //                                   .getKDriveSimulation()
-      //                                   .getDriveTrainSimulatedChassisSpeedsFieldRelative(),
-      //                               SwerveSubsystem.getInstance()
-      //                                   .getKDriveSimulation()
-      //                                   .getSimulatedDriveTrainPose()
-      //                                   .getRotation(),
-      //                               Meters.of(2),
-      //                               MetersPerSecond.of(1.5),
-      //                               Degrees.of(-80)))));
-      //   // L3 placement
-      //   joy.b()
-      //       .onTrue(
-      //           Commands.runOnce(
-      //               () ->
-      //                   SimulatedArena.getInstance()
-      //                       .addGamePieceProjectile(
-      //                           new ReefscapeCoralOnFly(
-      //                               SwerveSubsystem.getInstance()
-      //                                   .getKDriveSimulation()
-      //                                   .getSimulatedDriveTrainPose()
-      //                                   .getTranslation(),
-      //                               new Translation2d(0.4, 0),
-      //                               SwerveSubsystem.getInstance()
-      //                                   .getKDriveSimulation()
-      //                                   .getDriveTrainSimulatedChassisSpeedsFieldRelative(),
-      //                               SwerveSubsystem.getInstance()
-      //                                   .getKDriveSimulation()
-      //                                   .getSimulatedDriveTrainPose()
-      //                                   .getRotation(),
-      //                               Meters.of(1.35),
-      //                               MetersPerSecond.of(1.5),
-      //                               Degrees.of(-60)))));
-    } else {
-      joy.y()
-          .onTrue(
-              new InstantCommand(
-                  () -> {
-                    SwerveSubsystem.getInstance().resetGyro(Rotation2d.kZero);
-                    RobotPose.getInstance()
-                        .resetHeading(SwerveSubsystem.getInstance().getGyroRotation());
-                  }));
-    }
+    DriverProfiles.DriverTriggers.kDualAE
+        .and(joy.y())
+        .and(Constants.ModeTriggers.kReal)
+        .onTrue(
+            new InstantCommand(
+                () -> {
+                  SwerveSubsystem.getInstance().resetGyro(Rotation2d.kZero);
+                  RobotPose.getInstance()
+                      .resetHeading(SwerveSubsystem.getInstance().getGyroRotation());
+                }));
   }
 }

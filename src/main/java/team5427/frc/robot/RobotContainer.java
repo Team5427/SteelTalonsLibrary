@@ -8,8 +8,11 @@ import com.pathplanner.lib.config.RobotConfig;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.Logger;
+import team5427.frc.robot.Constants.DriverConstants;
+import team5427.frc.robot.io.DriverProfiles;
 import team5427.frc.robot.io.OperatorControls;
 import team5427.frc.robot.io.PilotingControls;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
@@ -24,13 +27,10 @@ import team5427.frc.robot.subsystems.vision.io.QuestNav;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-  public TelemetryVerbosity 
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    
-    
     try {
       Constants.config = RobotConfig.fromGUISettings();
     } catch (Exception e) {
@@ -68,8 +68,14 @@ public class RobotContainer {
   }
 
   private void buttonBindings() {
-    new PilotingControls();
-    new OperatorControls();
+    new PilotingControls(
+        DriverProfiles.kSelectedDriverState.modeType.equals(DriverProfiles.DriverModeType.SINGLE)
+            ? new CommandXboxController(DriverConstants.kDriverJoystickPort)
+            : new CommandXboxController(DriverConstants.kDriverJoystickPort));
+    new OperatorControls(
+        DriverProfiles.kSelectedDriverState.modeType.equals(DriverProfiles.DriverModeType.SINGLE)
+            ? new CommandXboxController(DriverConstants.kDriverJoystickPort)
+            : new CommandXboxController(DriverConstants.kOperatorJoystickPort));
   }
 
   /**

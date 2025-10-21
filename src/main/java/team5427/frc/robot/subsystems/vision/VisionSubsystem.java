@@ -48,7 +48,9 @@ public class VisionSubsystem extends VirtualSubsystem {
       Supplier<Pose2d> referencePoseSupplier,
       Supplier<Tuple2Plus<Double, Rotation2d>> referenceHeadingSupplier) {
     if (m_instance == null) {
-      m_instance = new VisionSubsystem(consumer, referencePoseSupplier, referenceHeadingSupplier, Constants.kVerbosityLevel);
+      m_instance =
+          new VisionSubsystem(
+              consumer, referencePoseSupplier, referenceHeadingSupplier, Constants.kVerbosityLevel);
     }
     return m_instance;
   }
@@ -65,7 +67,8 @@ public class VisionSubsystem extends VirtualSubsystem {
   private VisionSubsystem(
       VisionConsumer consumer,
       Supplier<Pose2d> referencePoseSupplier,
-      Supplier<Tuple2Plus<Double, Rotation2d>> referenceHeadingSupplier, TelemetryVerbosity verbosity) {
+      Supplier<Tuple2Plus<Double, Rotation2d>> referenceHeadingSupplier,
+      TelemetryVerbosity verbosity) {
     super();
     switch (Constants.currentMode) {
       case REAL:

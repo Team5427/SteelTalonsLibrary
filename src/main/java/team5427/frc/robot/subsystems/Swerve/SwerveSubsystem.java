@@ -82,16 +82,16 @@ public class SwerveSubsystem extends SubsystemBase
     return getInstance(null);
   }
 
-  public static SwerveSubsystem getInstance(OdometryConsumer consumer, TelemetryVerbosity verbosity) {
+  public static SwerveSubsystem getInstance(OdometryConsumer consumer) {
     if (m_instance == null) {
-      m_instance = new SwerveSubsystem(consumer, verbosity);
+      m_instance = new SwerveSubsystem(consumer);
     }
     return m_instance;
   }
 
-  private SwerveSubsystem(OdometryConsumer consumer, TelemetryVerbosity verbosity) {
+  private SwerveSubsystem(OdometryConsumer consumer) {
     swerveModules = new SwerveModule[SwerveUtil.kDefaultNumModules];
-    
+
     mapleSimConfig =
         DriveTrainSimulationConfig.Default()
             .withRobotMass(Kilogram.of(Constants.config.massKG))
@@ -121,7 +121,7 @@ public class SwerveSubsystem extends SubsystemBase
         swerveModules[SwerveUtil.kRearRightModuleIdx] =
             new SwerveModule(SwerveUtil.kRearRightModuleIdx);
         gyro = new GyroIOPigeon();
-        
+
         break;
       case REPLAY:
         swerveModules[SwerveUtil.kFrontLeftModuleIdx] =
@@ -214,7 +214,7 @@ public class SwerveSubsystem extends SubsystemBase
       } else {
         swerveModules[i].setModuleState(targetModuleStates[i]);
       }
-      ;
+
       actualModuleStates[i] = swerveModules[i].getModuleState(); // Read actual module state
       swerveModules[i].periodic(); // Update Module Inputs
     }
@@ -293,6 +293,25 @@ public class SwerveSubsystem extends SubsystemBase
     return velocity * (1 - dampeningAmount) * SwerveConstants.kDriveMotorConfiguration.maxVelocity;
   }
 
+  public ChassisSpeeds getDriveSpeedsOnlyScaled(
+      double xInput, double yInput, double omegaInput, double dampenAmount) {
+    ChassisSpeeds rawSpeeds =
+        new ChassisSpeeds(
+            scaleDriveComponents(xInput, dampenAmount),
+            scaleDriveComponents(yInput, dampenAmount),
+            scaleDriveComponents(omegaInput, dampenAmount) * Math.PI);
+    return rawSpeeds;
+  }
+
+  public ChassisSpeeds getDriveSpeedsOnlyScaled(ChassisSpeeds speeds, double dampenAmount) {
+    ChassisSpeeds rawSpeeds =
+        new ChassisSpeeds(
+            scaleDriveComponents(speeds.vxMetersPerSecond, dampenAmount),
+            scaleDriveComponents(speeds.vyMetersPerSecond, dampenAmount),
+            scaleDriveComponents(speeds.omegaRadiansPerSecond, dampenAmount) * Math.PI);
+    return rawSpeeds;
+  }
+
   @Override
   public ChassisSpeeds getDriveSpeeds(
       double xInput, double yInput, double omegaInput, double dampenAmount) {
@@ -306,10 +325,7 @@ public class SwerveSubsystem extends SubsystemBase
     ChassisSpeeds fieldRelativeSpeeds =
         ChassisSpeeds.fromRobotRelativeSpeeds(rawSpeeds, getGyroRotation().unaryMinus());
 
-    ChassisSpeeds discretizedSpeeds =
-        ChassisSpeeds.discretize(fieldRelativeSpeeds, Constants.kLoopSpeed);
-
-    return discretizedSpeeds;
+    return fieldRelativeSpeeds;
   }
 
   @Override
@@ -329,10 +345,7 @@ public class SwerveSubsystem extends SubsystemBase
     ChassisSpeeds fieldRelativeSpeeds =
         ChassisSpeeds.fromRobotRelativeSpeeds(rawSpeeds, fieldOrientedRotation);
 
-    ChassisSpeeds discretizedSpeeds =
-        ChassisSpeeds.discretize(fieldRelativeSpeeds, Constants.kLoopSpeed);
-
-    return discretizedSpeeds;
+    return fieldRelativeSpeeds;
   }
 
   @Override

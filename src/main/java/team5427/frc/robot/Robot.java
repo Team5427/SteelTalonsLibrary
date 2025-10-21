@@ -112,12 +112,12 @@ public class Robot extends LoggedRobot {
     Superstructure.logStates();
     QuestNav.getInstance().processHeartbeat();
     QuestNav.getInstance().cleanupResponses();
-    
-    if(Constants.currentMode == team5427.frc.robot.Constants.Mode.SIM){
+
+    if (Constants.ModeTriggers.kSim.getAsBoolean()) {
       Translation3d target =
-      new Pose3d(RobotPose.getInstance().getAdaptivePose())
-          .plus(new Transform3d(0, 0, 4, Rotation3d.kZero))
-          .getTranslation();
+          new Pose3d(RobotPose.getInstance().getAdaptivePose())
+              .plus(new Transform3d(0, 0, 4, Rotation3d.kZero))
+              .getTranslation();
       AdjustedParabolicThread.getInstance().setTarget(target);
 
       Logger.recordOutput(

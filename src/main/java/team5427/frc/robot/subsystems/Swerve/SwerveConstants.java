@@ -31,7 +31,7 @@ public final class SwerveConstants {
 
   public static final double kCoupleRatio = 3.125;
 
-    public static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.05);
+  public static final MomentOfInertia kSteerInertia = KilogramSquareMeters.of(0.05);
   public static final MomentOfInertia kDriveInertia = KilogramSquareMeters.of(0.01);
   // Simulated voltage necessary to overcome friction
   public static final Voltage kSteerFrictionVoltage = Volts.of(0.05);
