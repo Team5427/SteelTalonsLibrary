@@ -41,7 +41,6 @@ import team5427.frc.robot.subsystems.Swerve.gyro.GyroIOInputsAutoLogged;
 import team5427.frc.robot.subsystems.Swerve.gyro.GyroIOPigeon;
 import team5427.frc.robot.subsystems.Swerve.gyro.GyroIOSim;
 import team5427.frc.robot.subsystems.Swerve.io.talon.PhoenixOdometryThread;
-import team5427.lib.drivers.TelemetryVerbosity;
 import team5427.lib.systems.swerve.SteelTalonsDriveSpeeds;
 import team5427.lib.systems.swerve.SteelTalonsSwerve;
 import team5427.lib.systems.swerve.SwerveUtil;
@@ -51,7 +50,6 @@ public class SwerveSubsystem extends SubsystemBase
     implements SteelTalonsSwerve, SteelTalonsDriveSpeeds, DrivetrainSysId {
 
   public static final Lock odometryLock = new ReentrantLock();
-  public static TelemetryVerbosity telemetryVerbosity;
   private SwerveSetpointGenerator setpointGenerator;
   @AutoLogOutput private SwerveSetpoint setpoint;
   @AutoLogOutput private ChassisSpeeds currentChassisSpeeds;
@@ -64,7 +62,6 @@ public class SwerveSubsystem extends SubsystemBase
   private GyroIO gyro;
   private GyroIOInputsAutoLogged gyroInputs;
   private DriveFeedforwards driveFeedforwards;
-
   @Getter private SwerveDriveSimulation kDriveSimulation;
 
   public static DriveTrainSimulationConfig mapleSimConfig;

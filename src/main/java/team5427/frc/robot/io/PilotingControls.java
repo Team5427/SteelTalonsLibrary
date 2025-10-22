@@ -98,10 +98,14 @@ public class PilotingControls {
                   Superstructure.kSelectedSwerveState = SwerveStates.RAW_DRIVING;
                 }));
 
+
     Superstructure.SwerveStates.SwerveTriggers.kRawDriving
         .and(autonTrigger.negate())
         .and(disabledTrigger.negate())
         .whileTrue(new RawChassisMovement(joy));
+    Superstructure.SwerveStates.SwerveTriggers.kRawDriving.whileTrue(new RawChassisMovement(joy));
+    Superstructure.SwerveStates.SwerveTriggers.kControlledDriving.whileTrue(
+        new ControlledChassisMovement(joy));
     // SwerveSubsystem.getInstance().setDefaultCommand(new RawChassisMovement(joy));
     Superstructure.SwerveStates.SwerveTriggers.kControlledDriving
         .and(autonTrigger.negate())

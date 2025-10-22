@@ -5,6 +5,8 @@
 package team5427.frc.robot;
 
 import com.pathplanner.lib.config.RobotConfig;
+
+import edu.wpi.first.cscore.CameraServerJNI.TelemetryKind;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -60,8 +62,8 @@ public class RobotContainer {
     }
     VisionSubsystem.getInstance(
         RobotPose.getInstance()::addVisionMeasurement,
-        RobotPose.getInstance()::getAdaptivePose,
-        RobotPose.getInstance()::getGyroHeading);
+        () -> RobotPose.getInstance().getAdaptivePose(),
+        () -> RobotPose.getInstance().getGyroHeading());
     QuestNav.getInstance().setPose(new Pose2d(10 * Math.random(), 4, Rotation2d.kZero));
 
     buttonBindings();
@@ -76,6 +78,8 @@ public class RobotContainer {
         DriverProfiles.kSelectedDriverState.modeType.equals(DriverProfiles.DriverModeType.SINGLE)
             ? new CommandXboxController(DriverConstants.kDriverJoystickPort)
             : new CommandXboxController(DriverConstants.kOperatorJoystickPort));
+
+
   }
 
   /**
