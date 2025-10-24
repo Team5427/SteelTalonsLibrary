@@ -33,6 +33,7 @@ import org.ironmaple.simulation.drivesims.configs.SwerveModuleSimulationConfig;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import team5427.frc.robot.Constants;
+import team5427.frc.robot.Constants.Mode;
 import team5427.frc.robot.RobotPose;
 import team5427.frc.robot.generated.TunerConstants;
 import team5427.frc.robot.subsystems.Swerve.gyro.GyroIO;
@@ -49,7 +50,6 @@ public class SwerveSubsystem extends SubsystemBase
     implements SteelTalonsSwerve, SteelTalonsDriveSpeeds, DrivetrainSysId {
 
   public static final Lock odometryLock = new ReentrantLock();
-
   private SwerveSetpointGenerator setpointGenerator;
   @AutoLogOutput private SwerveSetpoint setpoint;
   @AutoLogOutput private ChassisSpeeds currentChassisSpeeds;
@@ -62,7 +62,6 @@ public class SwerveSubsystem extends SubsystemBase
   private GyroIO gyro;
   private GyroIOInputsAutoLogged gyroInputs;
   private DriveFeedforwards driveFeedforwards;
-
   @Getter private SwerveDriveSimulation kDriveSimulation;
 
   public static DriveTrainSimulationConfig mapleSimConfig;
@@ -89,6 +88,7 @@ public class SwerveSubsystem extends SubsystemBase
 
   private SwerveSubsystem(OdometryConsumer consumer) {
     swerveModules = new SwerveModule[SwerveUtil.kDefaultNumModules];
+
     mapleSimConfig =
         DriveTrainSimulationConfig.Default()
             .withRobotMass(Kilogram.of(Constants.config.massKG))
@@ -118,6 +118,7 @@ public class SwerveSubsystem extends SubsystemBase
         swerveModules[SwerveUtil.kRearRightModuleIdx] =
             new SwerveModule(SwerveUtil.kRearRightModuleIdx);
         gyro = new GyroIOPigeon();
+
         break;
       case REPLAY:
         swerveModules[SwerveUtil.kFrontLeftModuleIdx] =
@@ -204,7 +205,13 @@ public class SwerveSubsystem extends SubsystemBase
     }
 
     for (int i = 0; i < swerveModules.length; i++) {
-      swerveModules[i].setModuleState(targetModuleStates[i], driveFeedforwards);
+
+      if (Constants.currentMode != Mode.SIM) {
+        swerveModules[i].setModuleState(targetModuleStates[i], driveFeedforwards);
+      } else {
+        swerveModules[i].setModuleState(targetModuleStates[i]);
+      }
+
       actualModuleStates[i] = swerveModules[i].getModuleState(); // Read actual module state
       swerveModules[i].periodic(); // Update Module Inputs
     }
@@ -283,6 +290,25 @@ public class SwerveSubsystem extends SubsystemBase
     return velocity * (1 - dampeningAmount) * SwerveConstants.kDriveMotorConfiguration.maxVelocity;
   }
 
+  public ChassisSpeeds getDriveSpeedsOnlyScaled(
+      double xInput, double yInput, double omegaInput, double dampenAmount) {
+    ChassisSpeeds rawSpeeds =
+        new ChassisSpeeds(
+            scaleDriveComponents(xInput, dampenAmount),
+            scaleDriveComponents(yInput, dampenAmount),
+            scaleDriveComponents(omegaInput, dampenAmount) * Math.PI);
+    return rawSpeeds;
+  }
+
+  public ChassisSpeeds getDriveSpeedsOnlyScaled(ChassisSpeeds speeds, double dampenAmount) {
+    ChassisSpeeds rawSpeeds =
+        new ChassisSpeeds(
+            scaleDriveComponents(speeds.vxMetersPerSecond, dampenAmount),
+            scaleDriveComponents(speeds.vyMetersPerSecond, dampenAmount),
+            scaleDriveComponents(speeds.omegaRadiansPerSecond, dampenAmount) * Math.PI);
+    return rawSpeeds;
+  }
+
   @Override
   public ChassisSpeeds getDriveSpeeds(
       double xInput, double yInput, double omegaInput, double dampenAmount) {
@@ -296,10 +322,7 @@ public class SwerveSubsystem extends SubsystemBase
     ChassisSpeeds fieldRelativeSpeeds =
         ChassisSpeeds.fromRobotRelativeSpeeds(rawSpeeds, getGyroRotation().unaryMinus());
 
-    ChassisSpeeds discretizedSpeeds =
-        ChassisSpeeds.discretize(fieldRelativeSpeeds, Constants.kLoopSpeed);
-
-    return discretizedSpeeds;
+    return fieldRelativeSpeeds;
   }
 
   @Override
@@ -319,10 +342,7 @@ public class SwerveSubsystem extends SubsystemBase
     ChassisSpeeds fieldRelativeSpeeds =
         ChassisSpeeds.fromRobotRelativeSpeeds(rawSpeeds, fieldOrientedRotation);
 
-    ChassisSpeeds discretizedSpeeds =
-        ChassisSpeeds.discretize(fieldRelativeSpeeds, Constants.kLoopSpeed);
-
-    return discretizedSpeeds;
+    return fieldRelativeSpeeds;
   }
 
   @Override
@@ -333,7 +353,7 @@ public class SwerveSubsystem extends SubsystemBase
     yInput *= (1 - dampenAmount);
 
     double calculatedOmega =
-        SwerveConstants.kRotationPIDController.calculate(
+        DrivingConstants.kRotationController.calculate(
             RobotPose.getInstance().getAdaptivePose().getRotation().getRadians(),
             targetOmega.getRadians());
 
