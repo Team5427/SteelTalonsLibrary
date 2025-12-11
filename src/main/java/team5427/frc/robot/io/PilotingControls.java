@@ -35,85 +35,63 @@ public class PilotingControls {
   /** Made private to prevent multiple calls to this method */
   private void initalizeTriggers() {
 
-    disabledTrigger =
-        new Trigger(
-            () -> {
-              return DriverStation.isDisabled();
-            });
+    disabledTrigger = new Trigger(DriverStation::isDisabled);
+    autonTrigger = new Trigger(DriverStation::isAutonomous);
 
-    autonTrigger =
-        new Trigger(
-            () -> {
-              return DriverStation.isAutonomous();
-            });
+    // ═══════════════════════════════════════════════════════════════════════════
+    // SWERVE STATE CONTROL BINDINGS
+    // ═══════════════════════════════════════════════════════════════════════════
+    
+    // Toggle controlled driving with left bumper
     DriverProfiles.DriverTriggers.kDualAE
         .and(joy.leftBumper())
-        .toggleOnTrue(
-            new InstantCommand(
-                () -> {
-                  Superstructure.kSelectedSwerveState =
-                      Superstructure.SwerveStates.CONTROLLED_DRIVING;
-                }))
-        .toggleOnFalse(
-            new InstantCommand(
-                () -> {
-                  Superstructure.kSelectedSwerveState = Superstructure.SwerveStates.RAW_DRIVING;
-                }));
+        .toggleOnTrue(Superstructure.setSwerveStateCommand(SwerveStates.CONTROLLED_DRIVING))
+        .toggleOnFalse(Superstructure.setSwerveStateCommand(SwerveStates.RAW_DRIVING));
+
+    // Toggle auto align with right bumper
     DriverProfiles.DriverTriggers.kDualAE
         .and(joy.rightBumper())
-        .toggleOnTrue(
-            new InstantCommand(
-                () -> {
-                  Superstructure.kSelectedSwerveState = Superstructure.SwerveStates.AUTO_ALIGN;
-                }))
-        .toggleOnFalse(
-            new InstantCommand(
-                () -> {
-                  Superstructure.kSelectedSwerveState = Superstructure.SwerveStates.RAW_DRIVING;
-                }));
+        .toggleOnTrue(Superstructure.setSwerveStateCommand(SwerveStates.AUTO_ALIGN))
+        .toggleOnFalse(Superstructure.setSwerveStateCommand(SwerveStates.CONTROLLED_DRIVING));
 
+    // Auto mode state management
     autonTrigger
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  Superstructure.kSelectedSwerveState = SwerveStates.AUTON;
-                }))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  Superstructure.kSelectedSwerveState = SwerveStates.RAW_DRIVING;
-                }));
+        .onTrue(Superstructure.setSwerveStateCommand(SwerveStates.AUTON))
+        .onFalse(Superstructure.setSwerveStateCommand(SwerveStates.CONTROLLED_DRIVING));
 
+    // Disabled mode state management
     disabledTrigger
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  Superstructure.kSelectedSwerveState = SwerveStates.DISABLED;
-                }))
-        .negate()
+        .onTrue(Superstructure.setSwerveStateCommand(SwerveStates.DISABLED));
+    
+    disabledTrigger.negate()
         .and(autonTrigger.negate())
-        .onTrue(
-            new InstantCommand(
-                () -> {
-                  Superstructure.kSelectedSwerveState = SwerveStates.RAW_DRIVING;
-                }));
+        .onTrue(Superstructure.setSwerveStateCommand(SwerveStates.RAW_DRIVING));
 
+    // ═══════════════════════════════════════════════════════════════════════════
+    // STATE-BASED COMMAND BINDINGS
+    // ═══════════════════════════════════════════════════════════════════════════
 
-    Superstructure.SwerveStates.SwerveTriggers.kRawDriving
+    // Raw driving mode
+    Superstructure.swerveStateIs(SwerveStates.RAW_DRIVING)
         .and(autonTrigger.negate())
         .and(disabledTrigger.negate())
         .whileTrue(new RawChassisMovement(joy));
-    Superstructure.SwerveStates.SwerveTriggers.kRawDriving.whileTrue(new RawChassisMovement(joy));
-    Superstructure.SwerveStates.SwerveTriggers.kControlledDriving.whileTrue(
-        new ControlledChassisMovement(joy));
-    // SwerveSubsystem.getInstance().setDefaultCommand(new RawChassisMovement(joy));
-    Superstructure.SwerveStates.SwerveTriggers.kControlledDriving
+
+    // Controlled driving mode
+    Superstructure.swerveStateIs(SwerveStates.CONTROLLED_DRIVING)
         .and(autonTrigger.negate())
         .and(disabledTrigger.negate())
         .whileTrue(new ControlledChassisMovement(joy));
-    Superstructure.SwerveStates.SwerveTriggers.kAuto_Align
+
+    // Auto align mode
+    Superstructure.swerveStateIs(SwerveStates.AUTO_ALIGN)
         .and(disabledTrigger.negate())
         .whileTrue(new MoveChassisToPose(joy, new Pose2d(5, 5.5, Rotation2d.k180deg)));
+
+    // ═══════════════════════════════════════════════════════════════════════════
+    // UTILITY BINDINGS
+    // ═══════════════════════════════════════════════════════════════════════════
+
     joy.a()
         .and(Constants.ModeTriggers.kSim)
         .onTrue(

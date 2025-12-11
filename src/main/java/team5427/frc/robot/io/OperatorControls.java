@@ -24,25 +24,20 @@ public class OperatorControls {
 
   /** Made private to prevent multiple calls to this method */
   private void initalizeTriggers() {
+    // Use command factories instead of inline InstantCommands
     joy.leftTrigger()
-        .whileTrue(
-            new InstantCommand(
-                () -> {
-                  Superstructure.kSelectedIntakeState = IntakeStates.INTAKING;
-                }))
-        .onFalse(
-            new InstantCommand(
-                () -> {
-                  Superstructure.kSelectedIntakeState = IntakeStates.STOWED;
-                }));
+        .whileTrue(Superstructure.setIntakeStateCommand(IntakeStates.INTAKING))
+        .onFalse(Superstructure.setIntakeStateCommand(IntakeStates.STOWED));
 
-    Superstructure.IntakeStates.IntakeTriggers.kIntaking
-        .and(Superstructure.SwerveStates.SwerveTriggers.kIntake_Assistance.negate())
+    // Use class-level trigger factory methods instead of nested class references
+    Superstructure.intakeStateIs(IntakeStates.INTAKING)
+        .and(Superstructure.swerveStateIs(Superstructure.SwerveStates.INTAKE_ASSISTANCE).negate())
         .whileTrue(new IntakeIntaking());
 
-    Superstructure.IntakeStates.IntakeTriggers.kStowed.whileTrue(new IntakeStowed());
+    Superstructure.intakeStateIs(IntakeStates.STOWED)
+        .whileTrue(new IntakeStowed());
 
-    Superstructure.IntakeStates.IntakeTriggers.kDisabled
+    Superstructure.intakeStateIs(IntakeStates.DISABLED)
         .whileTrue(
             new InstantCommand(
                 () -> {
