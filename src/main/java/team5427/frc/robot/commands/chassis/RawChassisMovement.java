@@ -10,7 +10,7 @@ import team5427.frc.robot.Constants.DriverConstants;
 import team5427.frc.robot.subsystems.Swerve.SwerveConstants;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
 
-public class ChassisMovement extends Command {
+public class RawChassisMovement extends Command {
 
   private SwerveSubsystem swerveSubsystem;
   private CommandXboxController joy;
@@ -18,7 +18,7 @@ public class ChassisMovement extends Command {
   private TunedJoystick translationJoystick;
   private TunedJoystick rotationJoystick;
 
-  public ChassisMovement(CommandXboxController driverJoystick) {
+  public RawChassisMovement(CommandXboxController driverJoystick) {
     swerveSubsystem = SwerveSubsystem.getInstance();
     joy = driverJoystick;
     translationJoystick = new TunedJoystick(joy.getHID());
@@ -33,16 +33,11 @@ public class ChassisMovement extends Command {
   }
 
   @Override
-  public void initialize() {
-    // swerveSubsystem.setFieldOp(DriverStation.getAlliance().get().equals(Alliance.Red));
-  }
-
-  @Override
   public void execute() {
     if (DriverStation.isTeleop()) {
       double vx = -translationJoystick.getRightY();
       double vy = -translationJoystick.getRightX();
-      double omegaRadians = -rotationJoystick.getLeftX() * Math.abs(translationJoystick.getLeftX());
+      double omegaRadians = -rotationJoystick.getLeftX();
 
       double dampener = (joy.getRightTriggerAxis() * SwerveConstants.kDampenerDampeningAmount);
 

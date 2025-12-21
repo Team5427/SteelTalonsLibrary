@@ -5,13 +5,20 @@
 package team5427.frc.robot;
 
 import com.pathplanner.lib.config.RobotConfig;
+
+import edu.wpi.first.cscore.CameraServerJNI.TelemetryKind;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.ironmaple.simulation.SimulatedArena;
 import org.littletonrobotics.junction.Logger;
+import team5427.frc.robot.Constants.DriverConstants;
+import team5427.frc.robot.io.DriverProfiles;
+import team5427.frc.robot.io.OperatorControls;
 import team5427.frc.robot.io.PilotingControls;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
+import team5427.frc.robot.subsystems.intake.IntakeSubsystem;
 import team5427.frc.robot.subsystems.vision.VisionSubsystem;
 import team5427.frc.robot.subsystems.vision.io.QuestNav;
 
@@ -37,30 +44,42 @@ public class RobotContainer {
     switch (Constants.currentMode) {
       case REAL:
         SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement);
+        IntakeSubsystem.getInstance();
         break;
       case REPLAY:
         SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement);
+        IntakeSubsystem.getInstance();
         break;
       case SIM:
         SwerveSubsystem.getInstance(RobotPose.getInstance()::addOdometryMeasurement);
         SimulatedArena.getInstance()
             .addDriveTrainSimulation(SwerveSubsystem.getInstance().getKDriveSimulation());
         SimulatedArena.getInstance().clearGamePieces();
-
+        IntakeSubsystem.getInstance(SwerveSubsystem.getInstance()::getKDriveSimulation);
         break;
       default:
         break;
     }
     VisionSubsystem.getInstance(
         RobotPose.getInstance()::addVisionMeasurement,
-        RobotPose.getInstance()::getAdaptivePose,
-        RobotPose.getInstance()::getGyroHeading);
+        () -> RobotPose.getInstance().getAdaptivePose(),
+        () -> RobotPose.getInstance().getGyroHeading());
     QuestNav.getInstance().setPose(new Pose2d(10 * Math.random(), 4, Rotation2d.kZero));
+
     buttonBindings();
   }
 
   private void buttonBindings() {
-    new PilotingControls();
+    new PilotingControls(
+        DriverProfiles.kSelectedDriverState.modeType.equals(DriverProfiles.DriverModeType.SINGLE)
+            ? new CommandXboxController(DriverConstants.kDriverJoystickPort)
+            : new CommandXboxController(DriverConstants.kDriverJoystickPort));
+    new OperatorControls(
+        DriverProfiles.kSelectedDriverState.modeType.equals(DriverProfiles.DriverModeType.SINGLE)
+            ? new CommandXboxController(DriverConstants.kDriverJoystickPort)
+            : new CommandXboxController(DriverConstants.kOperatorJoystickPort));
+
+
   }
 
   /**

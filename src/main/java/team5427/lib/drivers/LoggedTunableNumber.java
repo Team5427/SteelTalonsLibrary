@@ -1,6 +1,9 @@
 package team5427.lib.drivers;
 
 // credit: team 6328
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,7 +11,6 @@ import java.util.function.Consumer;
 import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import team5427.frc.robot.Constants;
-import team5427.frc.robot.Constants.Mode;
 
 /**
  * Class for a tunable number. Gets value from dashboard in tuning mode, returns default if not or
@@ -52,7 +54,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
     if (!hasDefault) {
       hasDefault = true;
       this.defaultValue = defaultValue;
-      if (Constants.currentMode.equals(Mode.REAL) && Constants.kIsTuningMode) {
+      if (Constants.kIsTuningMode) {
         dashboardNumber = new LoggedNetworkNumber(key, defaultValue);
       }
     }
@@ -67,9 +69,7 @@ public class LoggedTunableNumber implements DoubleSupplier {
     if (!hasDefault) {
       return 0.0;
     } else {
-      return Constants.currentMode.equals(Mode.REAL) && Constants.kIsTuningMode
-          ? dashboardNumber.get()
-          : defaultValue;
+      return Constants.kIsTuningMode ? dashboardNumber.get() : defaultValue;
     }
   }
 
@@ -111,6 +111,27 @@ public class LoggedTunableNumber implements DoubleSupplier {
   /** Runs action if any of the tunableNumbers have changed */
   public static void ifChanged(int id, Runnable action, LoggedTunableNumber... tunableNumbers) {
     ifChanged(id, values -> action.run(), tunableNumbers);
+  }
+
+  public Trigger bindToTrigger(Consumer<Double> onChange) {
+    InstantCommand command =
+        new InstantCommand(
+            () -> {
+              onChange.accept(get());
+            });
+    return new Trigger(
+            () -> {
+              return hasChanged(this.hashCode());
+            })
+        .onTrue(command);
+  }
+
+  public Trigger bindToTrigger(Command command) {
+    return new Trigger(
+            () -> {
+              return hasChanged(this.hashCode());
+            })
+        .onTrue(command);
   }
 
   @Override

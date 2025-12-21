@@ -1,5 +1,6 @@
 package team5427.frc.robot;
 
+import edu.wpi.first.cscore.CameraServerJNI.TelemetryKind;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -109,8 +110,7 @@ public class RobotPose {
     // SwerveSubsystem.getInstance().resetGyro(resetPose.getRotation());
   }
 
-  public void resetAllPose(
-      Pose2d resetPose, SwerveModulePosition[] modulePositions, Rotation2d gyroAngle) {
+  public void resetAllPose(Pose2d resetPose, SwerveModulePosition[] modulePositions, Rotation2d gyroAngle) {
     resetOdometryPose(resetPose, modulePositions, gyroAngle);
     resetEstimatedPose(resetPose, modulePositions, gyroAngle);
     SwerveSubsystem.getInstance().resetGyro(resetPose.getRotation());

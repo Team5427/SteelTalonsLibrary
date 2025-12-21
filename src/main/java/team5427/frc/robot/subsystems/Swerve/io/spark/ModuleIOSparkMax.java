@@ -117,7 +117,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
     inputs.driveMotorAngularVelocity = RotationsPerSecond.of(inputs.driveMotorRotationsPerSecond);
     SparkUtil.ifOk(
-        driveMotor.getSparkMax(),
+        steerMotor.getSparkMax(),
         steerMotor::getEncoderPosition,
         (value) -> inputs.steerPosition = Rotation2d.fromRotations(value));
     inputs.currentModuleState =
