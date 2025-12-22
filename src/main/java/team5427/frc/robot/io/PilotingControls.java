@@ -38,9 +38,7 @@ public class PilotingControls {
     disabledTrigger = new Trigger(DriverStation::isDisabled);
     autonTrigger = new Trigger(DriverStation::isAutonomous);
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // SWERVE STATE CONTROL BINDINGS
-    // ═══════════════════════════════════════════════════════════════════════════
+    // Swerve State Control Bindings
     
     // Toggle controlled driving with left bumper
     DriverProfiles.DriverTriggers.kDualAE
@@ -67,9 +65,7 @@ public class PilotingControls {
         .and(autonTrigger.negate())
         .onTrue(Superstructure.setSwerveStateCommand(SwerveStates.RAW_DRIVING));
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // STATE-BASED COMMAND BINDINGS
-    // ═══════════════════════════════════════════════════════════════════════════
+    // State Based Command Bindings
 
     // Raw driving mode
     Superstructure.swerveStateIs(SwerveStates.RAW_DRIVING)
@@ -88,9 +84,7 @@ public class PilotingControls {
         .and(disabledTrigger.negate())
         .whileTrue(new MoveChassisToPose(joy, new Pose2d(5, 5.5, Rotation2d.k180deg)));
 
-    // ═══════════════════════════════════════════════════════════════════════════
-    // UTILITY BINDINGS
-    // ═══════════════════════════════════════════════════════════════════════════
+    // Utility Bindings
 
     joy.a()
         .and(Constants.ModeTriggers.kSim)
