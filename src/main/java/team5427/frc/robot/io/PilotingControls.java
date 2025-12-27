@@ -39,7 +39,7 @@ public class PilotingControls {
     autonTrigger = new Trigger(DriverStation::isAutonomous);
 
     // Swerve State Control Bindings
-    
+
     // Toggle controlled driving with left bumper
     DriverProfiles.DriverTriggers.kDualAE
         .and(joy.leftBumper())
@@ -58,10 +58,10 @@ public class PilotingControls {
         .onFalse(Superstructure.setSwerveStateCommand(SwerveStates.CONTROLLED_DRIVING));
 
     // Disabled mode state management
+    disabledTrigger.onTrue(Superstructure.setSwerveStateCommand(SwerveStates.DISABLED));
+
     disabledTrigger
-        .onTrue(Superstructure.setSwerveStateCommand(SwerveStates.DISABLED));
-    
-    disabledTrigger.negate()
+        .negate()
         .and(autonTrigger.negate())
         .onTrue(Superstructure.setSwerveStateCommand(SwerveStates.RAW_DRIVING));
 

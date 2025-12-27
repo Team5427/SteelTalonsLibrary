@@ -9,15 +9,15 @@ import org.littletonrobotics.junction.Logger;
 public final class Superstructure {
   public static final String dashboardKey = "/Superstructure";
 
-  //State Variables, accessible only with getters
+  // State Variables, accessible only with getters
 
   private static SwerveStates kSelectedSwerveState = SwerveStates.DISABLED;
   private static SwerveStates kPreviousSwerveState = SwerveStates.DISABLED;
-  
+
   private static IntakeStates kSelectedIntakeState = IntakeStates.STOWED;
   private static IntakeStates kPreviousIntakeState = IntakeStates.STOWED;
 
-  //Swerve States Enum
+  // Swerve States Enum
   public static enum SwerveStates {
     RAW_DRIVING,
     CONTROLLED_DRIVING,
@@ -37,29 +37,31 @@ public final class Superstructure {
 
   // Getter Methods
 
-  public static SwerveStates getSelectedSwerveState() {
+  public static synchronized SwerveStates getSelectedSwerveState() {
     return kSelectedSwerveState;
   }
 
-  public static SwerveStates getPreviousSwerveState() {
+  public static synchronized SwerveStates getPreviousSwerveState() {
     return kPreviousSwerveState;
   }
 
-  public static IntakeStates getSelectedIntakeState() {
+  public static synchronized IntakeStates getSelectedIntakeState() {
     return kSelectedIntakeState;
   }
 
-  public static IntakeStates getPreviousIntakeState() {
+  public static synchronized IntakeStates getPreviousIntakeState() {
     return kPreviousIntakeState;
   }
 
   // State Request Methods
 
   /**
-   * Allows you to request a new Swerve State and if it is different than the current one, the current and previous state will be replaced accordingly.
+   * Allows you to request a new Swerve State and if it is different than the current one, the
+   * current and previous state will be replaced accordingly.
+   *
    * @param newState The SwerveState that you are requesting
    */
-  public static void requestSwerveState(SwerveStates newState) {
+  public static synchronized void requestSwerveState(SwerveStates newState) {
     if (kSelectedSwerveState != newState) {
       kPreviousSwerveState = kSelectedSwerveState;
       kSelectedSwerveState = newState;
@@ -69,10 +71,12 @@ public final class Superstructure {
   }
 
   /**
-   * Allows you to request a new Intake State and if it is different than the current one, the current and previous state will be replaced accordingly.
+   * Allows you to request a new Intake State and if it is different than the current one, the
+   * current and previous state will be replaced accordingly.
+   *
    * @param newState The IntakeState that you are requesting
    */
-  public static void requestIntakeState(IntakeStates newState) {
+  public static synchronized void requestIntakeState(IntakeStates newState) {
     if (kSelectedIntakeState != newState) {
       kPreviousIntakeState = kSelectedIntakeState;
       kSelectedIntakeState = newState;
@@ -88,7 +92,7 @@ public final class Superstructure {
    * @param state Desired {@link SwerveStates} target.
    * @return One-shot command that applies the new state.
    */
-  public static Command setSwerveStateCommand(SwerveStates state) {
+  public static synchronized Command setSwerveStateCommand(SwerveStates state) {
     return Commands.runOnce(() -> requestSwerveState(state))
         .withName("SetSwerveState(" + state.toString() + ")");
   }
@@ -99,7 +103,7 @@ public final class Superstructure {
    * @param state Desired {@link IntakeStates} target.
    * @return One-shot command that applies the new state.
    */
-  public static Command setIntakeStateCommand(IntakeStates state) {
+  public static synchronized Command setIntakeStateCommand(IntakeStates state) {
     return Commands.runOnce(() -> requestIntakeState(state))
         .withName("SetIntakeState(" + state.toString() + ")");
   }
@@ -111,7 +115,7 @@ public final class Superstructure {
    * @param state State to compare against the currently selected swerve state.
    * @return Trigger that reflects the state match.
    */
-  public static Trigger swerveStateIs(SwerveStates state) {
+  public static synchronized Trigger swerveStateIs(SwerveStates state) {
     return new Trigger(() -> kSelectedSwerveState == state);
   }
 
@@ -122,13 +126,14 @@ public final class Superstructure {
    * @param states Acceptable {@link SwerveStates} values.
    * @return Trigger that fires while the current state is any of the provided values.
    */
-  public static Trigger swerveStateIsAnyOf(SwerveStates... states) {
-    return new Trigger(() -> {
-      for (SwerveStates state : states) {
-        if (kSelectedSwerveState == state) return true;
-      }
-      return false;
-    });
+  public static synchronized Trigger swerveStateIsAnyOf(SwerveStates... states) {
+    return new Trigger(
+        () -> {
+          for (SwerveStates state : states) {
+            if (kSelectedSwerveState == state) return true;
+          }
+          return false;
+        });
   }
 
   /**
@@ -137,7 +142,7 @@ public final class Superstructure {
    * @param state State to compare against the currently selected intake state.
    * @return Trigger that reflects the state match.
    */
-  public static Trigger intakeStateIs(IntakeStates state) {
+  public static synchronized Trigger intakeStateIs(IntakeStates state) {
     return new Trigger(() -> kSelectedIntakeState == state);
   }
 
@@ -148,26 +153,26 @@ public final class Superstructure {
    * @param states Acceptable {@link IntakeStates} values.
    * @return Trigger that fires while the current state is any of the provided values.
    */
-  public static Trigger intakeStateIsAnyOf(IntakeStates... states) {
-    return new Trigger(() -> {
-      for (IntakeStates state : states) {
-        if (kSelectedIntakeState == state) return true;
-      }
-      return false;
-    });
+  public static synchronized Trigger intakeStateIsAnyOf(IntakeStates... states) {
+    return new Trigger(
+        () -> {
+          for (IntakeStates state : states) {
+            if (kSelectedIntakeState == state) return true;
+          }
+          return false;
+        });
   }
 
-  //Transition Triggers detect state changes
-  
+  // Transition Triggers detect state changes
+
   /**
    * Trigger that becomes active the first cycle a new swerve state is selected.
    *
    * @param state Destination state to monitor.
    * @return Trigger that detects the transition into the supplied state.
    */
-  public static Trigger swerveStateChangedTo(SwerveStates state) {
-    return new Trigger(() -> 
-        kSelectedSwerveState == state && kPreviousSwerveState != state);
+  public static synchronized Trigger swerveStateChangedTo(SwerveStates state) {
+    return new Trigger(() -> kSelectedSwerveState == state && kPreviousSwerveState != state);
   }
 
   /**
@@ -176,9 +181,8 @@ public final class Superstructure {
    * @param state Source state to monitor.
    * @return Trigger that detects the transition away from the supplied state.
    */
-  public static Trigger swerveStateChangedFrom(SwerveStates state) {
-    return new Trigger(() -> 
-        kPreviousSwerveState == state && kSelectedSwerveState != state);
+  public static synchronized Trigger swerveStateChangedFrom(SwerveStates state) {
+    return new Trigger(() -> kPreviousSwerveState == state && kSelectedSwerveState != state);
   }
 
   /**
@@ -187,9 +191,8 @@ public final class Superstructure {
    * @param state Destination state to monitor.
    * @return Trigger that detects the transition into the supplied state.
    */
-  public static Trigger intakeStateChangedTo(IntakeStates state) {
-    return new Trigger(() -> 
-        kSelectedIntakeState == state && kPreviousIntakeState != state);
+  public static synchronized Trigger intakeStateChangedTo(IntakeStates state) {
+    return new Trigger(() -> kSelectedIntakeState == state && kPreviousIntakeState != state);
   }
 
   /**
@@ -198,9 +201,8 @@ public final class Superstructure {
    * @param state Source state to monitor.
    * @return Trigger that detects the transition away from the supplied state.
    */
-  public static Trigger intakeStateChangedFrom(IntakeStates state) {
-    return new Trigger(() -> 
-        kPreviousIntakeState == state && kSelectedIntakeState != state);
+  public static synchronized Trigger intakeStateChangedFrom(IntakeStates state) {
+    return new Trigger(() -> kPreviousIntakeState == state && kSelectedIntakeState != state);
   }
 
   // Compound - Combine multiple conditions
@@ -211,24 +213,12 @@ public final class Superstructure {
    * @param condition Supplier evaluated each cycle.
    * @return Trigger that mirrors the supplier's value.
    */
-  public static Trigger when(BooleanSupplier condition) {
+  public static synchronized Trigger when(BooleanSupplier condition) {
     return new Trigger(condition);
   }
 
-  /**
-   * Builds a trigger that requires both the swerve and intake states to match provided values.
-   *
-   * @param swerve Desired {@link SwerveStates} match.
-   * @param intake Desired {@link IntakeStates} match.
-   * @return Trigger that stays active while both state conditions are satisfied.
-   */
-  public static Trigger swerveAndIntakeStatesAre(SwerveStates swerve, IntakeStates intake) {
-    return swerveStateIs(swerve).and(intakeStateIs(intake));
-  }
-
-
   // Validation - Prevent invalid state combinations
-  
+
   /**
    * Determines whether the swerve subsystem may transition between the supplied states.
    *
@@ -236,7 +226,7 @@ public final class Superstructure {
    * @param to Desired target state.
    * @return {@code true} if the transition is allowed, {@code false} otherwise.
    */
-  public static boolean canTransitionSwerve(SwerveStates from, SwerveStates to) {
+  public static synchronized boolean canTransitionSwerve(SwerveStates from, SwerveStates to) {
     if (from == SwerveStates.DISABLED && to == SwerveStates.AUTO_ALIGN) {
       return false;
     }
@@ -249,21 +239,20 @@ public final class Superstructure {
    *
    * @param newState Desired target state.
    */
-  public static void requestSwerveStateValidated(SwerveStates newState) {
+  public static synchronized void requestSwerveStateValidated(SwerveStates newState) {
     if (canTransitionSwerve(kSelectedSwerveState, newState)) {
       requestSwerveState(newState);
     } else {
-      Logger.recordOutput(dashboardKey + "/InvalidTransition", 
+      Logger.recordOutput(
+          dashboardKey + "/InvalidTransition",
           kSelectedSwerveState.toString() + " -> " + newState.toString());
     }
   }
 
-  //Logging
+  // Logging
 
-  /**
-   * Publishes the current and previous swerve and intake states to AdvantageScope.
-   */
-  public static void logStates() {
+  /** Publishes the current and previous swerve and intake states to AdvantageScope. */
+  public static synchronized void logStates() {
     Logger.recordOutput(dashboardKey + "/SwerveState", kSelectedSwerveState.toString());
     Logger.recordOutput(dashboardKey + "/IntakeState", kSelectedIntakeState.toString());
     Logger.recordOutput(dashboardKey + "/PreviousSwerveState", kPreviousSwerveState.toString());

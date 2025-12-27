@@ -34,8 +34,7 @@ public class OperatorControls {
         .and(Superstructure.swerveStateIs(Superstructure.SwerveStates.INTAKE_ASSISTANCE).negate())
         .whileTrue(new IntakeIntaking());
 
-    Superstructure.intakeStateIs(IntakeStates.STOWED)
-        .whileTrue(new IntakeStowed());
+    Superstructure.intakeStateIs(IntakeStates.STOWED).whileTrue(new IntakeStowed());
 
     Superstructure.intakeStateIs(IntakeStates.DISABLED)
         .whileTrue(

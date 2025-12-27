@@ -33,7 +33,7 @@ This is a WPILib robotics project for FRC (FIRST Robotics Competition).
 ## WPILib RAG Server Usage
 - **Tool Name**: `mcp_wpilibrag_query_wpilib_docs`
 - **When to Use**: ALWAYS for any WPILib-related question (see mandatory requirement above)
-- **Parameters**: 
+- **Parameters**:
   - `question`: The user's question
   - `version`: WPILib version (default: "2025")
   - `language`: "Java", "Python", "C++", or "API Reference"

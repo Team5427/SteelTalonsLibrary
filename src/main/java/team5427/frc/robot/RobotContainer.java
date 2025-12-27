@@ -5,8 +5,6 @@
 package team5427.frc.robot;
 
 import com.pathplanner.lib.config.RobotConfig;
-
-import edu.wpi.first.cscore.CameraServerJNI.TelemetryKind;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -78,8 +76,6 @@ public class RobotContainer {
         DriverProfiles.kSelectedDriverState.modeType.equals(DriverProfiles.DriverModeType.SINGLE)
             ? new CommandXboxController(DriverConstants.kDriverJoystickPort)
             : new CommandXboxController(DriverConstants.kOperatorJoystickPort));
-
-
   }
 
   /**

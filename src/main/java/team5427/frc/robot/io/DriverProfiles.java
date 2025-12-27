@@ -25,18 +25,18 @@ public final class DriverProfiles {
 
   public static DriverState kSelectedDriverState = DriverState.A_E;
 
-  public static final Trigger kIsMode(DriverModeType mode){
+  public static final Trigger kIsMode(DriverModeType mode) {
     return new Trigger(
-      () -> {
-        return kSelectedDriverState.modeType == mode;
-      });
+        () -> {
+          return kSelectedDriverState.modeType == mode;
+        });
   }
 
-  public static final Trigger kIsState(DriverState state){
+  public static final Trigger kIsState(DriverState state) {
     return new Trigger(
-      () -> {
-        return kSelectedDriverState == state;
-      });
+        () -> {
+          return kSelectedDriverState == state;
+        });
   }
 
   public static class DriverTriggers {
