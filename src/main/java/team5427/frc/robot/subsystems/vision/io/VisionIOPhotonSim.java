@@ -2,7 +2,6 @@ package team5427.frc.robot.subsystems.vision.io;
 
 import static edu.wpi.first.units.Units.Meter;
 
-import edu.wpi.first.cscore.CameraServerJNI.TelemetryKind;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
