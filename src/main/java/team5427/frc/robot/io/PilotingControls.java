@@ -14,6 +14,7 @@ import team5427.frc.robot.Superstructure.SwerveStates;
 import team5427.frc.robot.commands.chassis.ControlledChassisMovement;
 import team5427.frc.robot.commands.chassis.MoveChassisToPose;
 import team5427.frc.robot.commands.chassis.RawChassisMovement;
+import team5427.frc.robot.io.DriverProfiles.DriverState;
 import team5427.frc.robot.subsystems.Swerve.SwerveSubsystem;
 import team5427.frc.robot.subsystems.vision.io.QuestNav;
 
@@ -41,13 +42,13 @@ public class PilotingControls {
     // Swerve State Control Bindings
 
     // Toggle controlled driving with left bumper
-    DriverProfiles.DriverTriggers.kDualAE
+    DriverProfiles.DriverTriggers.kIsState(DriverState.A_E)
         .and(joy.leftBumper())
         .toggleOnTrue(Superstructure.setSwerveStateCommand(SwerveStates.CONTROLLED_DRIVING))
         .toggleOnFalse(Superstructure.setSwerveStateCommand(SwerveStates.RAW_DRIVING));
 
     // Toggle auto align with right bumper
-    DriverProfiles.DriverTriggers.kDualAE
+    DriverProfiles.DriverTriggers.kIsState(DriverState.TEST_DUAL)
         .and(joy.rightBumper())
         .toggleOnTrue(Superstructure.setSwerveStateCommand(SwerveStates.AUTO_ALIGN))
         .toggleOnFalse(Superstructure.setSwerveStateCommand(SwerveStates.CONTROLLED_DRIVING));
@@ -95,7 +96,7 @@ public class PilotingControls {
                             .setPose(new Pose2d(10 * Math.random(), 4, Rotation2d.kZero)))
                 .ignoringDisable(true));
 
-    DriverProfiles.DriverTriggers.kDualAE
+    DriverProfiles.DriverTriggers.kIsState(DriverState.A_E)
         .and(joy.y())
         .and(Constants.ModeTriggers.kSim)
         .onTrue(
@@ -117,7 +118,7 @@ public class PilotingControls {
                   SwerveSubsystem.getInstance().getKDriveSimulation().setSimulationWorldPose(pose);
                 }));
 
-    DriverProfiles.DriverTriggers.kDualAE
+    DriverProfiles.DriverTriggers.kIsState(DriverState.TEST_DUAL)
         .and(joy.y())
         .and(Constants.ModeTriggers.kReal)
         .onTrue(
