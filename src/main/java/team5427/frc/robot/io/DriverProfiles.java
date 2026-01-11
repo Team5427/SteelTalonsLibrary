@@ -25,19 +25,60 @@ public final class DriverProfiles {
 
   public static DriverState kSelectedDriverState = DriverState.A_E;
 
-  public static class DriverTriggers {
-    public static final Trigger kIsMode(DriverModeType mode) {
+  public static final Trigger kIsMode(DriverModeType mode){
     return new Trigger(
-        () -> {
-          return kSelectedDriverState.modeType == mode;
-        });
+      () -> {
+        return kSelectedDriverState.modeType == mode;
+      });
   }
 
-  public static final Trigger kIsState(DriverState state) {
+  public static final Trigger kIsState(DriverState state){
     return new Trigger(
-        () -> {
-          return kSelectedDriverState == state;
-        });
+      () -> {
+        return kSelectedDriverState == state;
+      });
   }
+
+  public static class DriverTriggers {
+    public static final Trigger kIsDualMode =
+        new Trigger(
+            () -> {
+              return kSelectedDriverState.modeType == DriverModeType.DUAL;
+            });
+    public static final Trigger kIsSingleMode =
+        new Trigger(
+            () -> {
+              return kSelectedDriverState.modeType == DriverModeType.SINGLE;
+            });
+    public static final Trigger kSingleEric =
+        new Trigger(
+            () -> {
+              return kSelectedDriverState.equals(DriverState.ERIC);
+            });
+    public static final Trigger kSingleTestSingle =
+        new Trigger(
+            () -> {
+              return kSelectedDriverState.equals(DriverState.TEST_SINGLE);
+            });
+    public static final Trigger kDualAE =
+        new Trigger(
+            () -> {
+              return kSelectedDriverState.equals(DriverState.A_E);
+            });
+    public static final Trigger kDualSS =
+        new Trigger(
+            () -> {
+              return kSelectedDriverState.equals(DriverState.S_S);
+            });
+    public static final Trigger kDualKA =
+        new Trigger(
+            () -> {
+              return kSelectedDriverState.equals(DriverState.K_A);
+            });
+    public static final Trigger kDualTestDual =
+        new Trigger(
+            () -> {
+              return kSelectedDriverState.equals(DriverState.TEST_DUAL);
+            });
   }
 }
