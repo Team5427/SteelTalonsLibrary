@@ -1,6 +1,10 @@
 package team5427.lib.motors;
 
+import org.ironmaple.simulation.drivesims.COTS;
+
 import team5427.lib.drivers.ComplexGearRatio;
+import team5427.lib.tunableControls.*;
+import team5427.lib.tunableControls.TunableControls.ControlConstants;
 
 public class MotorConfiguration {
 
@@ -52,7 +56,7 @@ public class MotorConfiguration {
 
     kP = kI = kD = kFF = kG = 0.0;
     kS = kV = kA = 0.0;
-
+ 
     altA = altV = altJ = 0.0;
 
     currentLimit = 30;
@@ -125,5 +129,16 @@ public class MotorConfiguration {
     }
     // converts to radians
     return gearRatio.getMathematicalGearRatio() * 2 * Math.PI;
+  }
+
+  public ControlConstants toControlConstants(){
+    return new ControlConstants()
+      .withPID(kP, kI, kD)
+      .withFeedforward(kV, kA)
+      .withPhysical(kS, kG)
+      .withProfile(maxVelocity, maxAcceleration)
+      .withProfiled(mode!=MotorMode.kFlywheel)
+      .withTolerance(0)
+      .withContinuous(-Math.PI, Math.PI);
   }
 }
