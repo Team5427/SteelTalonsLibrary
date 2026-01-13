@@ -104,16 +104,16 @@ public class RobotPose {
 
   public void resetAllPose(Pose2d resetPose) {
     // resetPose = resetPose.plus(new Transform2d(0, 0, Rotation2d.k180deg));
+    SwerveSubsystem.getInstance().resetGyro(resetPose.getRotation());
     resetOdometryPose(resetPose);
     resetEstimatedPose(resetPose);
-    // SwerveSubsystem.getInstance().resetGyro(resetPose.getRotation());
   }
 
   public void resetAllPose(
       Pose2d resetPose, SwerveModulePosition[] modulePositions, Rotation2d gyroAngle) {
+    SwerveSubsystem.getInstance().resetGyro(resetPose.getRotation());
     resetOdometryPose(resetPose, modulePositions, gyroAngle);
     resetEstimatedPose(resetPose, modulePositions, gyroAngle);
-    SwerveSubsystem.getInstance().resetGyro(resetPose.getRotation());
   }
 
   public void resetOdometryPose(Pose2d resetPose) {
@@ -148,7 +148,7 @@ public class RobotPose {
 
   public Tuple2Plus<Double, Rotation2d> getGyroHeading() {
     return new Tuple2Plus<Double, Rotation2d>(
-        Timer.getTimestamp(), SwerveSubsystem.getInstance().getGyroRotationAdjusted());
+        Timer.getTimestamp(), SwerveSubsystem.getInstance().getGyroRotation());
   }
 
   public void log() {

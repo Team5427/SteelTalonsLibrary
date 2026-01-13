@@ -19,8 +19,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.concurrent.locks.Lock;
@@ -61,6 +59,7 @@ public class SwerveSubsystem extends SubsystemBase
   @Getter private SwerveModulePosition[] modulePositions;
   private GyroIO gyro;
   private GyroIOInputsAutoLogged gyroInputs;
+  private Rotation2d gyroOffset = Rotation2d.kZero;
   private DriveFeedforwards driveFeedforwards;
   @Getter private SwerveDriveSimulation kDriveSimulation;
 
@@ -385,20 +384,17 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public Rotation2d getGyroRotation() {
 
-    return gyroInputs.yawPosition;
+    return gyroInputs.yawPosition.plus(gyroOffset);
   }
 
-  public Rotation2d getGyroRotationAdjusted() {
-    if (DriverStation.getAlliance().isPresent()
-        && DriverStation.getAlliance().get().equals(Alliance.Red)) {
-      return gyroInputs.yawPosition.plus(Rotation2d.k180deg);
-    }
+  public Rotation2d getRawGyroRotation() {
+
     return gyroInputs.yawPosition;
   }
 
   @Override
   public void resetGyro(Rotation2d newYaw) {
-    gyro.resetGyroYawAngle(newYaw);
+    gyroOffset = newYaw.minus(getRawGyroRotation());
   }
 
   @Override

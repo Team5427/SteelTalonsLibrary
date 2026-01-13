@@ -37,12 +37,12 @@ public class ControlledChassisMovement extends Command {
         DriverConstants.kDriverControllerRotationalControlJoystickDeadzone);
     addRequirements(swerveSubsystem);
 
-    controlledAngle = swerveSubsystem.getGyroRotationAdjusted();
+    controlledAngle = swerveSubsystem.getGyroRotation();
   }
 
   @Override
   public void initialize() {
-    controlledAngle = swerveSubsystem.getGyroRotationAdjusted();
+    controlledAngle = swerveSubsystem.getGyroRotation();
   }
 
   @Override

@@ -74,7 +74,7 @@ public class MoveChassisToPose extends Command {
             vy,
             omegaRadiansPerSecond,
             dampener,
-            swerveSubsystem.getGyroRotationAdjusted().unaryMinus());
+            swerveSubsystem.getGyroRotation().unaryMinus());
 
     if (joy.getLeftTriggerAxis() >= 0.1) {
       driverSpeeds = new ChassisSpeeds(0, 0, 0);
