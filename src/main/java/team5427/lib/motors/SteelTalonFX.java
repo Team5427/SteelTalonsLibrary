@@ -59,8 +59,6 @@ public class SteelTalonFX implements IMotorController {
   public VoltageOut voltageOut = new VoltageOut(Volt.of(0.0));
   private boolean useTorqueCurrentFOC = false;
 
-  // private boolean usePositionVoltage = false;
-
   public SteelTalonFX(CANDeviceId id) {
     this.id = id;
 
