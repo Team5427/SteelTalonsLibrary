@@ -30,12 +30,6 @@ public final class DrivingConstants {
                   .withTolerance(kRotationAngleTolerance.get(), kRotationVelocityTolerance.get())
                   .withContinuous(-Math.PI, Math.PI)));
 
-  //   public static ProfiledPIDController kRotationController =
-  //       new ProfiledPIDController(
-  //           kRotationKp.get(),
-  //           0,
-  //           kRotationKd.get(),
-  //           new Constraints(kRotationMaxVelocity.get(), kRotationMaxAcceleration.get()));
 
   public static LoggedTunableNumber kTranslationalKp =
       new LoggedTunableNumber("Translational P", 1.0);
@@ -51,13 +45,6 @@ public final class DrivingConstants {
   public static LoggedTunableNumber kTranslationalVelocityTolerance =
       new LoggedTunableNumber("Translational Velocity Tolerance (m/s)", 0.05);
 
-  //   public static ProfiledPIDController kTranslationalController =
-  //       new ProfiledPIDController(
-  //           kTranslationalKp.get(),
-  //           0.0,
-  //           kTranslationalKd.get(),
-  //           new Constraints(kTranslationalMaxVelocity.get(),
-  // kTranslationalMaxAcceleration.get()));
 
   public static TunableProfiledController kTranslationalController =
       new TunableProfiledController(
@@ -70,18 +57,5 @@ public final class DrivingConstants {
                       kTranslationalPositionTolerance.get(),
                       kTranslationalVelocityTolerance.get())));
 
-  //   static {
-  //     // Bind tunables to controller updates
-  //     kTranslationalKp.bindToTrigger((Double number) -> kTranslationalController.setP(number));
-  //     kTranslationalKd.bindToTrigger((Double number) -> kTranslationalController.setD(number));
 
-  //     kTranslationalMaxVelocity.bindToTrigger(
-  //         (Double number) ->
-  //             kTranslationalController.setConstraints(
-  //                 new Constraints(number, kTranslationalMaxAcceleration.get())));
-  //     kTranslationalMaxAcceleration.bindToTrigger(
-  //         (Double number) ->
-  //             kTranslationalController.setConstraints(
-  //                 new Constraints(kTranslationalMaxVelocity.get(), number)));
-  //   }
 }

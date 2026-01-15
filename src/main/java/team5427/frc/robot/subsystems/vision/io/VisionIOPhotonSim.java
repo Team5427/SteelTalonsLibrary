@@ -39,10 +39,7 @@ public class VisionIOPhotonSim implements VisionIO {
 
   Supplier<Tuple2Plus<Double, Rotation2d>> getHeadingData;
 
-  // PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(
-  //         AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape),
-  // PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-  //         VisionConstants.swerveCamTransform);
+
 
   public VisionIOPhotonSim(
       String cameraName,
@@ -99,8 +96,7 @@ public class VisionIOPhotonSim implements VisionIO {
                 results.get(i).getBestTarget().getYaw(),
                 results.get(i).getBestTarget().getPitch(),
                 PoseObservationType.PHOTONVISION_MULTI_TAG));
-        // inputs.timestamps = Arrays.copyOf(inputs.timestamps, inputs.timestamps.length + 1);
-        // inputs.timestamps[inputs.timestamps.length-1] = results.get(i).getTimestampSeconds();
+
       } else {
         List<PhotonTrackedTarget> targets = results.get(i).getTargets();
         Optional<EstimatedRobotPose> pose = photonPoseEstimator.update(results.get(i));
@@ -136,8 +132,7 @@ public class VisionIOPhotonSim implements VisionIO {
 
   @Override
   public void applyCameraTransformation(Transform3d transformation) {
-    // visionSystemSim = new VisionSystemSim(sim, transformation);
-    // photonPoseEstimator.setRobotToCameraTransform(transformation);
+
   }
 
   @Override

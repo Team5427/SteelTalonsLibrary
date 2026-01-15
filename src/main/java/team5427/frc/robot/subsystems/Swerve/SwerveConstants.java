@@ -52,8 +52,7 @@ public final class SwerveConstants {
         kDriveMotorConfiguration.getStandardMaxVelocity(MotorUtil.kKrakenX60FOC_MaxRPM);
     kDriveMotorConfiguration.maxAcceleration = kDriveMotorConfiguration.maxVelocity * 2.0;
 
-    kDriveMotorConfiguration.kP = 2.64; // 2.64
-    // kDriveMotorConfiguration.kV = 0.75;
+    kDriveMotorConfiguration.kP = 2.64;
     kDriveMotorConfiguration.kA = 0.1;
     kDriveMotorConfiguration.kS = 0.5;
     kDriveMotorConfiguration.altV = kDriveMotorConfiguration.maxVelocity;
@@ -78,7 +77,6 @@ public final class SwerveConstants {
     kSteerMotorConfiguration.kD = 0.0004;
     kSteerMotorConfiguration.kS = 0.5;
     kSteerMotorConfiguration.kA = 0.2;
-    // kSteerMotorConfiguration.kA = 8.0;
     kSteerMotorConfiguration.altV = kSteerMotorConfiguration.maxVelocity;
     kSteerMotorConfiguration.altA = kSteerMotorConfiguration.maxAcceleration;
   }
