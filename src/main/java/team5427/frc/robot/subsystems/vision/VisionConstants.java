@@ -13,7 +13,6 @@ import edu.wpi.first.units.measure.Distance;
 public class VisionConstants {
   public static final String kSwerveCamName = "swerveCam";
   public static final String kIntakeCamName = "intakeCam";
-  // public static final String kBackCamName = "backCam";
 
   public static final int kCameraCount = 2;
 
@@ -45,11 +44,7 @@ public class VisionConstants {
   public static final Transform3d kQuestCameraTransform =
       new Transform3d(
           0.192, 0.358, Units.inchesToMeters(8.098), new Rotation3d(Rotation2d.kCCW_90deg));
-  // new Transform3d(
-  //     Units.inchesToMeters(0.296),
-  //     Units.inchesToMeters(12.5),
-  //     Units.inchesToMeters(8.098),
-  //     new Rotation3d(Rotation2d.kCCW_90deg));
+
 
   public static Transform3d[] kCameraTransforms = new Transform3d[kCameraCount];
 

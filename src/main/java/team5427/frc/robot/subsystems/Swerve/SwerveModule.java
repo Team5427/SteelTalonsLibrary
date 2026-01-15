@@ -178,7 +178,6 @@ public class SwerveModule {
   public void runSteerCharacterization(double output) {
     // Characterizing TorqueCurrentFOC for steer usually doesnt work.
     io.setSteerPositionSetpoint(Amps.of(output));
-    // io.setSteerPositionSetpoint(Volts.of(output));
     io.setDriveSpeedSetpoint(MetersPerSecond.of(0.0));
   }
 
