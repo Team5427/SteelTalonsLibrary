@@ -18,6 +18,7 @@ public class Tuple5Plus<R, T, A, B, C> implements TuplePlus {
     this.t = t;
     this.a = a;
     this.b = b;
+    this.c = c;
 
     array = new Object[] {r, t, a, b, c};
     list = new LinkedList<Object>(Arrays.asList(array));

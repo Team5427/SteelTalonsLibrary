@@ -2,6 +2,7 @@ package team5427.frc.robot.commands.chassis;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.team4206.battleaid.common.TunedJoystick;
@@ -17,6 +18,8 @@ public class RawChassisMovement extends Command {
 
   private TunedJoystick translationJoystick;
   private TunedJoystick rotationJoystick;
+
+  private boolean isRed;
 
   public RawChassisMovement(CommandXboxController driverJoystick) {
     swerveSubsystem = SwerveSubsystem.getInstance();
@@ -35,9 +38,17 @@ public class RawChassisMovement extends Command {
   @Override
   public void execute() {
     if (DriverStation.isTeleop()) {
+      isRed =
+          DriverStation.getAlliance().isPresent()
+              && DriverStation.getAlliance().get() == Alliance.Red;
       double vx = -translationJoystick.getRightY();
       double vy = -translationJoystick.getRightX();
       double omegaRadians = -rotationJoystick.getLeftX();
+
+      if (isRed) {
+        vx *= -1;
+        vy *= -1;
+      }
 
       double dampener = (joy.getRightTriggerAxis() * SwerveConstants.kDampenerDampeningAmount);
 

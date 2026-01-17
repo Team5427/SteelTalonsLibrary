@@ -1,9 +1,10 @@
 package team5427.frc.robot.subsystems.Swerve;
 
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import team5427.lib.drivers.LoggedTunableNumber;
+import team5427.lib.tunableControls.TunableControls.ControlConstants;
+import team5427.lib.tunableControls.TunableControls.TunableControlConstants;
+import team5427.lib.tunableControls.TunableControls.TunableProfiledController;
 
 public final class DrivingConstants {
   public static LoggedTunableNumber kRotationKp = new LoggedTunableNumber("Rotation P", 1.0);
@@ -19,23 +20,22 @@ public final class DrivingConstants {
   public static LoggedTunableNumber kRotationVelocityTolerance =
       new LoggedTunableNumber("Rotation Velocity Tol.", Units.degreesToRadians(2));
 
-  public static ProfiledPIDController kRotationController =
-      new ProfiledPIDController(
-          kRotationKp.get(),
-          0,
-          kRotationKd.get(),
-          new Constraints(kRotationMaxVelocity.get(), kRotationMaxAcceleration.get()));
+  public static TunableProfiledController kRotationController =
+      new TunableProfiledController(
+          new TunableControlConstants(
+              "Swerve/Rotation",
+              new ControlConstants()
+                  .withPID(kRotationKp.get(), 0, kRotationKd.get())
+                  .withProfile(kRotationMaxVelocity.get(), kRotationMaxAcceleration.get())
+                  .withTolerance(kRotationAngleTolerance.get(), kRotationVelocityTolerance.get())
+                  .withContinuous(-Math.PI, Math.PI)));
 
-  static {
-    kRotationKp.bindToTrigger(
-        (Double number) -> {
-          kRotationController.setP(number);
-        });
-
-    kRotationController.enableContinuousInput(-Math.PI, Math.PI);
-    kRotationController.setTolerance(
-        kRotationAngleTolerance.get(), kRotationVelocityTolerance.get());
-  }
+  //   public static ProfiledPIDController kRotationController =
+  //       new ProfiledPIDController(
+  //           kRotationKp.get(),
+  //           0,
+  //           kRotationKd.get(),
+  //           new Constraints(kRotationMaxVelocity.get(), kRotationMaxAcceleration.get()));
 
   public static LoggedTunableNumber kTranslationalKp =
       new LoggedTunableNumber("Translational P", 0.6);
@@ -51,28 +51,37 @@ public final class DrivingConstants {
   public static LoggedTunableNumber kTranslationalVelocityTolerance =
       new LoggedTunableNumber("Translational Velocity Tolerance (m/s)", 0.05);
 
-  public static ProfiledPIDController kTranslationalController =
-      new ProfiledPIDController(
-          kTranslationalKp.get(),
-          0.0,
-          kTranslationalKd.get(),
-          new Constraints(kTranslationalMaxVelocity.get(), kTranslationalMaxAcceleration.get()));
+  //   public static ProfiledPIDController kTranslationalController =
+  //       new ProfiledPIDController(
+  //           kTranslationalKp.get(),
+  //           0.0,
+  //           kTranslationalKd.get(),
+  //           new Constraints(kTranslationalMaxVelocity.get(),
+  // kTranslationalMaxAcceleration.get()));
 
-  static {
-    // Bind tunables to controller updates
-    kTranslationalKp.bindToTrigger((Double number) -> kTranslationalController.setP(number));
-    kTranslationalKd.bindToTrigger((Double number) -> kTranslationalController.setD(number));
+  public static TunableProfiledController kTranslationalController =
+      new TunableProfiledController(
+          new TunableControlConstants(
+              "Swerve/Translation",
+              new ControlConstants()
+                  .withPID(kRotationKp.get(), 0, kRotationKd.get())
+                  .withProfile(kTranslationalMaxVelocity.get(), kTranslationalMaxAcceleration.get())
+                  .withTolerance(
+                      kTranslationalPositionTolerance.get(),
+                      kTranslationalVelocityTolerance.get())));
 
-    kTranslationalMaxVelocity.bindToTrigger(
-        (Double number) ->
-            kTranslationalController.setConstraints(
-                new Constraints(number, kTranslationalMaxAcceleration.get())));
-    kTranslationalMaxAcceleration.bindToTrigger(
-        (Double number) ->
-            kTranslationalController.setConstraints(
-                new Constraints(kTranslationalMaxVelocity.get(), number)));
+  //   static {
+  //     // Bind tunables to controller updates
+  //     kTranslationalKp.bindToTrigger((Double number) -> kTranslationalController.setP(number));
+  //     kTranslationalKd.bindToTrigger((Double number) -> kTranslationalController.setD(number));
 
-    kTranslationalController.setTolerance(
-        kTranslationalPositionTolerance.get(), kTranslationalVelocityTolerance.get());
-  }
+  //     kTranslationalMaxVelocity.bindToTrigger(
+  //         (Double number) ->
+  //             kTranslationalController.setConstraints(
+  //                 new Constraints(number, kTranslationalMaxAcceleration.get())));
+  //     kTranslationalMaxAcceleration.bindToTrigger(
+  //         (Double number) ->
+  //             kTranslationalController.setConstraints(
+  //                 new Constraints(kTranslationalMaxVelocity.get(), number)));
+  //   }
 }

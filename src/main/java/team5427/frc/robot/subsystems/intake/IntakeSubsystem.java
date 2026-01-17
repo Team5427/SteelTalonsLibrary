@@ -18,9 +18,6 @@ import team5427.frc.robot.subsystems.intake.io.IntakeIO;
 import team5427.frc.robot.subsystems.intake.io.IntakeIOInputsAutoLogged;
 import team5427.frc.robot.subsystems.intake.io.IntakeIOMagicTalonFX;
 import team5427.frc.robot.subsystems.intake.io.IntakeIOSim;
-import team5427.frc.robot.subsystems.intake.io.IntakeIO.IntakeIOInputs;
-
-
 
 public class IntakeSubsystem extends SubsystemBase {
   private LinearVelocity intakingSpeed;
@@ -28,7 +25,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
   private IntakeIO io;
   private IntakeIOInputsAutoLogged inputsAutoLogged;
-  
+
   public static IntakeSubsystem m_instance;
 
   public final Alert kIntakingSpeedOutOfBounds =
@@ -36,7 +33,8 @@ public class IntakeSubsystem extends SubsystemBase {
   public final Alert kIntakingRotationOutOfBounds =
       new Alert("OutOfBounds", "Intaking Rotation Requested Out of Bounds", AlertType.kWarning);
 
-  public static IntakeSubsystem getInstance(Supplier<SwerveDriveSimulation> swerveDriveSimulationSupplier) {
+  public static IntakeSubsystem getInstance(
+      Supplier<SwerveDriveSimulation> swerveDriveSimulationSupplier) {
     if (m_instance == null) {
       m_instance = new IntakeSubsystem(Optional.of(swerveDriveSimulationSupplier));
     }
