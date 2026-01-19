@@ -80,7 +80,6 @@ public class VisionSubsystem extends VirtualSubsystem {
                 VisionConstants.kIntakeCamTransform,
                 referencePoseSupplier,
                 referenceHeadingSupplier);
-        // io[2] = new VisionIOQuestNav(VisionConstants.kQuestCameraTransform);
 
         for (int i = 0; i < inputsAutoLogged.length; i++) {
           inputsAutoLogged[i] = new VisionIOInputsAutoLogged();
