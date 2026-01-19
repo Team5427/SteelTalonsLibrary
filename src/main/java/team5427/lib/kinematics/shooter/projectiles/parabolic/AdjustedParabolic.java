@@ -83,8 +83,6 @@ public class AdjustedParabolic {
             projectilePositionToTarget.getX(),
             projectilePositionToTarget.getY(),
             projectilePositionToTarget.getZ());
-    // FirstOrderIntegrator integrator = new DormandPrince54Integrator(stepSize, stepSize * 10,
-    // 1.0e-2, 1.0e-2);
     FirstOrderIntegrator integrator = new ClassicalRungeKuttaIntegrator(stepSize);
     integrator.addEventHandler(
         new EventHandler() {
@@ -148,11 +146,9 @@ public class AdjustedParabolic {
           y0[3] = Math.cos(theta) * a;
           y0[4] = Math.sin(theta) * a;
           y0[6] = -(vt / kTopFlywheelConversionFactor) + (vb / kBottomFlywheelConversionFactor);
-          // y0[6] = w;
           integrator.integrate(ode, t0, y0, tFinal, y1);
           Vector3D positionVector = new Vector3D(y1[0], y1[1], y1[2]);
           double d = positionVector.distance(targetPositionVector);
-          // double d = positionVector.distanceInf(targetPositionVector);
           if (d < smallestDistance) {
             smallestDistance = d;
             state[0] = theta;
@@ -165,8 +161,6 @@ public class AdjustedParabolic {
         }
       }
     }
-    // System.out.printf("(%.2f, %.2f, %.2f)\n", y2[0], y2[1], y2[2]);
-    // System.out.println(smallestDistance);
     System.out.printf("%.2f, %.2f, %.2f \n", position[0], position[1], position[2]);
     return new Tuple3Plus<Rotation2d, LinearVelocity, LinearVelocity>(
         Rotation2d.fromDegrees(state[0]),
@@ -201,53 +195,6 @@ public class AdjustedParabolic {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
-
-    // double vx = 5;
-    // double vy = 3;
-    // // Initial conditions: x, y, z, vx, vy, vz, w
-    // double[] y0 = {0, 0, 0, vx, vy, 0, 0.01}; // Initial position and velocity
-
-    // double t0 = 0.0;
-    // double tFinal = 10.0;
-    // double stepSize = 0.01;
-
-    // FirstOrderIntegrator integrator = new ClassicalRungeKuttaIntegrator(stepSize);
-    // AdjustedParabolic parabolic = new AdjustedParabolic(new AdjustedParabolicConfiguration());
-    // FirstOrderDifferentialEquations ode = parabolic.new NetForceODE();
-
-    // System.out.println("Starting integration...");
-    // integrator.integrate(ode, t0, y0, tFinal, y0);
-    // System.out.println("Integration complete.");
-
-    // System.out.printf("Final position: (%.2f, %.2f, %.2f)%n", y0[0], y0[1], y0[2]);
-    // System.out.printf(
-    //     "Ideal Final position: (%.2f, %.2f, %.2f)%n",
-    //     vx * (tFinal - t0),
-    //     (0.5)
-    //             * (-parabolic.configuration.g.in(MetersPerSecondPerSecond))
-    //             * Math.pow((tFinal - t0), 2)
-    //         + vy * (tFinal - t0),
-    //     0.0);
-    // System.out.printf("Final velocity: (%.2f, %.2f, %.2f)%n", y0[3], y0[4], y0[5]);
-    // System.out.printf("Final angular velocity: (%.2f)%n", y0[6]);
-    // System.out.println("Ballisitic Coefficient: " + parabolic.ballisticCoefficient);
-    // System.out.println("Projectile Area: " + parabolic.kProjectileArea);
-  }
-
-  //   private double calculateNessesaryFlywheelSpeed(double angle ){
-
-  //   }
-
-  //   private FirstOrderDifferentialEquations getNetAccelerationEquation(){
-
-  //     // return (double vector)->{
-  //     //     return (configuration.kProjectileMass.in(Kilogram) *
-  // configuration.g.in(MetersPerSecondPerSecond)) - (0.5)*(configuration.kAirDensity) *
-  // configuration.kProjectileDragCoefficient * kProjectileArea.in(kProjectileArea.baseUnit()) *
-  // velocity;
-  //     // };
-  //   }
-
   public class NetForceODE implements FirstOrderDifferentialEquations {
 
     @Override
@@ -293,22 +240,6 @@ public class AdjustedParabolic {
       Vector3D netAccelerationVector =
           new Vector3D(1.0 / configuration.kProjectileMass.in(Kilograms), netForceVector);
 
-      //   System.out.printf(
-      //       "Time: %.2f s | Pos: (%.2f, %.2f, %.2f) | Vel: (%.2f, %.2f, %.2f)\n",
-      //       t, y[0], y[1], y[2], vx, vy, vz);
-      //   System.out.printf(
-      //       "  Drag Force: (%.2f, %.2f, %.2f) | Magnus Force: (%.2f, %.2f, %.2f)\n",
-      //       dragForceVector.getX(),
-      //       dragForceVector.getY(),
-      //       dragForceVector.getZ(),
-      //       magnusForceVector.getX(),
-      //       magnusForceVector.getY(),
-      //       magnusForceVector.getZ());
-      //   System.out.printf(
-      //       "  Acceleration: (%.2f, %.2f, %.2f)\n",
-      //   netAccelerationVector.getX(), netAccelerationVector.getY(),
-      // netAccelerationVector.getZ());
-
       yDot[0] = velocityVector.getX();
       yDot[1] = velocityVector.getY();
       yDot[2] = velocityVector.getZ();
@@ -316,7 +247,6 @@ public class AdjustedParabolic {
       yDot[4] = netAccelerationVector.getY();
       yDot[5] = netAccelerationVector.getZ();
       yDot[6] = -Math.copySign(configuration.kProjectileSpinDecay, yDot[6]);
-      // yDot[6] = 0.0;
     }
   }
 }

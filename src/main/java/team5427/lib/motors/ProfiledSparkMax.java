@@ -90,8 +90,6 @@ public class ProfiledSparkMax implements IMotorController {
     config.voltageCompensation(12.0);
 
     applySparkConfiguration(config);
-
-    // sparkMax.burnFlash();
   }
 
   /*

@@ -87,8 +87,6 @@ public class SimpleSparkMax implements IMotorController {
     config.voltageCompensation(12.0);
 
     applySparkConfiguration(config);
-
-    // sparkMax.burnFlash();
   }
 
   /*
