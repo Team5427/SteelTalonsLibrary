@@ -52,7 +52,7 @@ public class VisionIOPhotonSim implements VisionIO {
     sim = new PhotonCameraSim(new PhotonCamera(cameraName));
     sim.setMaxSightRange(VisionConstants.kCameraMaxRange.in(Meter));
     sim.enableProcessedStream(true);
-    visionSystemSim = new VisionSystemSim("Argo Cam " + cameraName);
+    visionSystemSim = new VisionSystemSim("Talon Cam " + cameraName);
     visionSystemSim.addAprilTags(VisionConstants.kAprilTagLayout);
     visionSystemSim.addCamera(sim, cameraTransform);
     this.getHeadingData = getHeadingData;
@@ -99,8 +99,6 @@ public class VisionIOPhotonSim implements VisionIO {
                 results.get(i).getBestTarget().getYaw(),
                 results.get(i).getBestTarget().getPitch(),
                 PoseObservationType.PHOTONVISION_MULTI_TAG));
-        // inputs.timestamps = Arrays.copyOf(inputs.timestamps, inputs.timestamps.length + 1);
-        // inputs.timestamps[inputs.timestamps.length-1] = results.get(i).getTimestampSeconds();
       } else {
         List<PhotonTrackedTarget> targets = results.get(i).getTargets();
         Optional<EstimatedRobotPose> pose = photonPoseEstimator.update(results.get(i));

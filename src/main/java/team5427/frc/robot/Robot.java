@@ -82,8 +82,8 @@ public class Robot extends LoggedRobot {
     loadConstants();
     JoystickLogger.logJoystickData();
     m_robotContainer = new RobotContainer();
-    FollowPathCommand.warmupCommand().schedule();
-    AdjustedParabolicThread.getInstance().setShouldCompute(true);
+    CommandScheduler.getInstance().schedule(FollowPathCommand.warmupCommand());
+    AdjustedParabolicThread.getInstance().setShouldCompute(false);
     AdjustedParabolicThread.getInstance().start();
   }
 
@@ -148,7 +148,7 @@ public class Robot extends LoggedRobot {
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+      CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
     System.out.println("Switched to Auton");
   }
