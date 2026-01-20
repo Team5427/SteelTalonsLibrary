@@ -386,12 +386,6 @@ public class SwerveSubsystem extends SubsystemBase
 
     return gyroInputs.yawPosition.plus(gyroOffset);
   }
-  
-  public Rotation2d getGyroRotationAdjusted() {
-    if (DriverStation.getAlliance().isPresent()
-        && DriverStation.getAlliance().get().equals(Alliance.Red)) {
-      return gyroInputs.yawPosition.plus(Rotation2d.k180deg);
-  }
 
   public Rotation2d getRawGyroRotation() {
 
