@@ -4,38 +4,18 @@
   // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-    {
-      "type": "java",
-      "name": "AdjustedParabolic",
-      "request": "launch",
-      "mainClass": "team5427.lib.kinematics.shooter.projectiles.parabolic.AdjustedParabolic",
-      "projectName": "SteelTalonsLibrary"
-    },
-    {
-      "type": "java",
-      "name": "AdjustedParabolic",
-      "request": "launch",
-      "mainClass": "team5427.lib.kinematics.shooter.projectiles.AdjustedParabolic",
-      "projectName": "SteelTalonsLibrary"
-    },
-    {
-      "type": "java",
-      "name": "MagnusProjectileSimulation",
-      "request": "launch",
-      "mainClass": "team5427.lib.kinematics.shooter.projectiles.MagnusProjectileSimulation",
-      "projectName": "SteelTalonsLibrary"
-    },
+
     {
       "type": "wpilib",
       "name": "WPILib Desktop Debug",
       "request": "launch",
-      "desktop": true
+      "desktop": true,
     },
     {
       "type": "wpilib",
       "name": "WPILib roboRIO Debug",
       "request": "launch",
-      "desktop": false
+      "desktop": false,
     }
   ]
 }
