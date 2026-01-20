@@ -10,7 +10,6 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase;
-
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
@@ -53,8 +52,14 @@ public class SimpleSparkMax implements IMotorController {
         .inverted(configuration.isInverted)
         .idleMode(configuration.idleState == IdleState.kBrake ? IdleMode.kBrake : IdleMode.kCoast);
 
-     config.closedLoop.pid(configuration.kP, configuration.kI, configuration.kD);
-    config.closedLoop.feedForward.kA(configuration.kA).kV(configuration.kV).kS(configuration.kS).kG(configuration.kG);
+    config.closedLoop.pid(configuration.kP, configuration.kI, configuration.kD);
+    config
+        .closedLoop
+        .feedForward
+        .kA(configuration.kA)
+        .kV(configuration.kV)
+        .kS(configuration.kS)
+        .kG(configuration.kG);
     config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
     config.signals.appliedOutputPeriodMs(10);
 

@@ -13,7 +13,6 @@ import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -54,7 +53,13 @@ public class ProfiledSparkMax implements IMotorController {
         .idleMode(configuration.idleState == IdleState.kBrake ? IdleMode.kBrake : IdleMode.kCoast);
 
     config.closedLoop.pid(configuration.kP, configuration.kI, configuration.kD);
-    config.closedLoop.feedForward.kA(configuration.kA).kV(configuration.kV).kS(configuration.kS).kG(configuration.kG);
+    config
+        .closedLoop
+        .feedForward
+        .kA(configuration.kA)
+        .kV(configuration.kV)
+        .kS(configuration.kS)
+        .kG(configuration.kG);
     config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
     config.signals.appliedOutputPeriodMs(10);
 
