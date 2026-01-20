@@ -27,7 +27,8 @@ import team5427.frc.robot.subsystems.vision.io.QuestNav;
  * subsystems, commands, and trigger mappings) should be declared here.
  */
 public class RobotContainer {
-
+  private SendableChooser<Command> autoChooser;
+  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
@@ -64,6 +65,23 @@ public class RobotContainer {
         () -> RobotPose.getInstance().getGyroHeading());
     QuestNav.getInstance().setPose(new Pose2d(10 * Math.random(), 4, Rotation2d.kZero));
 
+    AutoBuilder.configure(
+            RobotPose.getInstance()::getAdaptivePose,
+            RobotPose.getInstance()::resetAllPose,
+            SwerveSubsystem.getInstance()::getCurrentChassisSpeeds,
+            (speeds, driveFF) -> SwerveSubsystem.getInstance().setInputSpeeds(speeds, driveFF),
+            new PPHolonomicDriveController(
+                    new PIDConstants(DrivingConstants.kTranslationalKp.get(), 0.0, 0.0),
+                    new PIDConstants(DrivingConstants.kRotationKp.get(), 0.0, 0.0)),
+            Constants.config,
+            () -> {
+                return DriverStation.getAlliance().isEmpty()
+                        && DriverStation.getAlliance().get() == Alliance.Red;
+            },
+            SwerveSubsystem.getInstance());
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+
     buttonBindings();
   }
 
@@ -85,7 +103,7 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return null;
+    return autoChooser.getSelected();
   }
 
   public void resetSimulationField() {
