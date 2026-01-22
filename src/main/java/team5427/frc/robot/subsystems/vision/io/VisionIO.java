@@ -32,6 +32,7 @@ public interface VisionIO {
     PHOTONVISION_MULTI_TAG,
     PHOTONVISION_SINGLE_TAG,
     QUEST_NAV,
+    NONE,
   }
 
   public void updateInputs(VisionIOInputs inputs);

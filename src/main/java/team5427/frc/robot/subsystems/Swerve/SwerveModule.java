@@ -2,7 +2,6 @@ package team5427.frc.robot.subsystems.Swerve;
 
 import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.pathplanner.lib.util.DriveFeedforwards;
@@ -124,9 +123,9 @@ public class SwerveModule {
     int sampleCount = inputs.odometryTimestamps.length; // All signals are sampled together
     odometryPositions = new SwerveModulePosition[sampleCount];
     for (int i = 0; i < sampleCount; i++) {
-      double positionMeters = inputs.odometryDrivePositionsMeters[i];
-      Rotation2d angle = inputs.odometryTurnPositions[i];
-      odometryPositions[i] = new SwerveModulePosition(positionMeters, angle);
+      odometryPositions[i] =
+          new SwerveModulePosition(
+              inputs.odometryDrivePositionsMeters[i], inputs.odometryTurnPositions[i]);
     }
   }
 
@@ -189,6 +188,6 @@ public class SwerveModule {
 
   /** Returns the module velocity in rotations/sec (Phoenix native units). */
   public double getFFCharacterizationVelocity() {
-    return inputs.driveMotorAngularVelocity.in(RotationsPerSecond);
+    return inputs.driveMotorRotationsPerSecond;
   }
 }

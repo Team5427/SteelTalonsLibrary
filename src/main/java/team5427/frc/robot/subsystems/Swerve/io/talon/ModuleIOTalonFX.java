@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.Newton;
 import static edu.wpi.first.units.Units.NewtonMeter;
 import static edu.wpi.first.units.Units.Radian;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.StatusSignal;
@@ -23,7 +22,6 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants.ClosedLoopOutputType;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.numbers.N2;
 import edu.wpi.first.units.measure.Angle;
@@ -259,29 +257,26 @@ public abstract class ModuleIOTalonFX implements ModuleIO {
 
     inputs.absolutePosition = Rotation2d.fromRotations(absolutePosition.getValue().in(Rotations));
 
+    inputs.driveMotorRotations = driveMotorPosition.getValueAsDouble();
+    inputs.driveMotorRotationsPerSecond = driveMotorVelocity.getValueAsDouble();
+
     inputs.driveMotorPosition = Rotation2d.fromRadians(driveMotorPosition.getValue().in(Radian));
-    inputs.driveMotorAngularVelocity = driveMotorVelocity.getValue();
-    inputs.driveMotorLinearVelocity =
-        MetersPerSecond.of(
-            driveMotorVelocity.getValue().in(RotationsPerSecond)
-                * Math.PI
-                * driveMotor.getMotorConfiguration().finalDiameterMeters);
+    inputs.driveMotorMetersPerSecond =
+        inputs.driveMotorRotationsPerSecond
+            * Math.PI
+            * driveMotor.getMotorConfiguration().finalDiameterMeters;
 
     inputs.steerPosition =
         Rotation2d.fromRotations(steerMotor.getEncoderPosition(steerMotorPosition));
 
-    inputs.currentModuleState =
-        new SwerveModuleState(
-            driveMotor.getEncoderVelocity(driveMotorVelocity), inputs.absolutePosition);
-    inputs.currentModulePosition =
-        new SwerveModulePosition(
-            driveMotor.getEncoderPosition(driveMotorPosition), inputs.absolutePosition);
+    inputs.currentModuleState.speedMetersPerSecond =
+        driveMotor.getEncoderVelocity(driveMotorVelocity);
+    inputs.currentModuleState.angle = inputs.absolutePosition;
+    inputs.currentModulePosition.distanceMeters = driveMotor.getEncoderPosition(driveMotorPosition);
+    inputs.currentModulePosition.angle = inputs.absolutePosition;
 
     inputs.driveMotorVoltage = driveMotorVoltage.getValue();
     inputs.steerMotorVoltage = steerMotorVoltage.getValue();
-
-    inputs.driveMotorRotations = driveMotorPosition.getValueAsDouble();
-    inputs.driveMotorRotationsPerSecond = driveMotorVelocity.getValueAsDouble();
 
     inputs.driveMotorConnected = driveMotor.getTalonFX().isConnected();
     inputs.steerMotorConnected = steerMotor.getTalonFX().isConnected();
