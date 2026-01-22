@@ -3,7 +3,6 @@ package team5427.frc.robot.subsystems.Swerve.io.spark;
 import static edu.wpi.first.units.Units.Amp;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import com.ctre.phoenix6.StatusSignal;
@@ -105,7 +104,7 @@ public class ModuleIOSparkMax implements ModuleIO {
     SparkUtil.ifOk(
         driveMotor.getSparkMax(),
         driveMotor::getEncoderVelocity,
-        (value) -> inputs.driveMotorLinearVelocity = MetersPerSecond.of(value));
+        (value) -> inputs.driveMotorMetersPerSecond = value);
     SparkUtil.ifOk(
         driveMotor.getSparkMax(),
         driveMotor.getSparkMax().getEncoder()::getPosition,
@@ -114,14 +113,12 @@ public class ModuleIOSparkMax implements ModuleIO {
         driveMotor.getSparkMax(),
         driveMotor.getSparkMax().getEncoder()::getVelocity,
         (value) -> inputs.driveMotorRotationsPerSecond = value);
-
-    inputs.driveMotorAngularVelocity = RotationsPerSecond.of(inputs.driveMotorRotationsPerSecond);
     SparkUtil.ifOk(
         steerMotor.getSparkMax(),
         steerMotor::getEncoderPosition,
         (value) -> inputs.steerPosition = Rotation2d.fromRotations(value));
-    inputs.currentModuleState =
-        new SwerveModuleState(inputs.driveMotorLinearVelocity, inputs.absolutePosition);
+    inputs.currentModuleState.speedMetersPerSecond = inputs.driveMotorMetersPerSecond;
+    inputs.currentModuleState.angle = inputs.absolutePosition;
     SparkUtil.ifOk(
         driveMotor.getSparkMax(),
         driveMotor::getEncoderPosition,

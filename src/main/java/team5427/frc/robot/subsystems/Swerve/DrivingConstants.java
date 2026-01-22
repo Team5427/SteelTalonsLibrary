@@ -30,7 +30,6 @@ public final class DrivingConstants {
                   .withTolerance(kRotationAngleTolerance.get(), kRotationVelocityTolerance.get())
                   .withContinuous(-Math.PI, Math.PI)));
 
-
   public static LoggedTunableNumber kTranslationalKp =
       new LoggedTunableNumber("Translational P", 1.0);
   public static LoggedTunableNumber kTranslationalKd =
@@ -45,7 +44,6 @@ public final class DrivingConstants {
   public static LoggedTunableNumber kTranslationalVelocityTolerance =
       new LoggedTunableNumber("Translational Velocity Tolerance (m/s)", 0.05);
 
-
   public static TunableProfiledController kTranslationalController =
       new TunableProfiledController(
           new TunableControlConstants(
@@ -56,6 +54,4 @@ public final class DrivingConstants {
                   .withTolerance(
                       kTranslationalPositionTolerance.get(),
                       kTranslationalVelocityTolerance.get())));
-
-
 }

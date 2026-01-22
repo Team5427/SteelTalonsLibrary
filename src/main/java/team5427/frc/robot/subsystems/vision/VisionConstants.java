@@ -21,7 +21,7 @@ public class VisionConstants {
   public static final Distance kMaxZHeight = Meters.of(0.6);
 
   public static final AprilTagFieldLayout kAprilTagLayout =
-      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+      AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltAndymark);
 
   // Left side of bot
   // Robot to camera
@@ -44,7 +44,6 @@ public class VisionConstants {
   public static final Transform3d kQuestCameraTransform =
       new Transform3d(
           0.192, 0.358, Units.inchesToMeters(8.098), new Rotation3d(Rotation2d.kCCW_90deg));
-
 
   public static Transform3d[] kCameraTransforms = new Transform3d[kCameraCount];
 

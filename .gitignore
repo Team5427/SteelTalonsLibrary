@@ -186,6 +186,20 @@ compile_commands.json
 # Eclipse generated file for annotation processors
 .factorypath
 
+
+# Simulation data log directory
+logs/
+
+# Folder that has CTRE Phoenix Sim device config storage
+ctre_sim/
+
+# clangd
+/.cache
+compile_commands.json
+
+# Eclipse generated file for annotation processors
+.factorypath
+
 gradle.properties
 
 .gradle.properties

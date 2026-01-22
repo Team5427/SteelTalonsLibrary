@@ -1,14 +1,11 @@
 package team5427.frc.robot.subsystems.Swerve.io;
 
 import static edu.wpi.first.units.Units.Amps;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Force;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -24,10 +21,9 @@ public interface ModuleIO {
     public SwerveModulePosition currentModulePosition =
         new SwerveModulePosition(0, absolutePosition);
     public Rotation2d driveMotorPosition = new Rotation2d(0);
-    public AngularVelocity driveMotorAngularVelocity = RotationsPerSecond.of(0);
     public double driveMotorRotationsPerSecond = 0.0;
     public double driveMotorRotations = 0.0;
-    public LinearVelocity driveMotorLinearVelocity = MetersPerSecond.of(0.0);
+    public double driveMotorMetersPerSecond = 0.0;
 
     public Voltage driveMotorVoltage = Volts.of(0.0);
     public Voltage steerMotorVoltage = Volts.of(0.0);

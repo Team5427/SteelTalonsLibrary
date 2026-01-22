@@ -5,14 +5,14 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Rotation;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.ResetMode;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -52,7 +52,14 @@ public class SimpleSparkMax implements IMotorController {
         .inverted(configuration.isInverted)
         .idleMode(configuration.idleState == IdleState.kBrake ? IdleMode.kBrake : IdleMode.kCoast);
 
-    config.closedLoop.pidf(configuration.kP, configuration.kI, configuration.kD, configuration.kFF);
+    config.closedLoop.pid(configuration.kP, configuration.kI, configuration.kD);
+    config
+        .closedLoop
+        .feedForward
+        .kA(configuration.kA)
+        .kV(configuration.kV)
+        .kS(configuration.kS)
+        .kG(configuration.kG);
     config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
     config.signals.appliedOutputPeriodMs(10);
 
@@ -105,7 +112,7 @@ public class SimpleSparkMax implements IMotorController {
           true);
     }
 
-    controller.setReference(this.setpoint, controlType);
+    controller.setSetpoint(this.setpoint, controlType);
   }
 
   @Override
@@ -187,26 +194,26 @@ public class SimpleSparkMax implements IMotorController {
   @Override
   public void setSetpoint(Distance distance) {
     this.setpoint = distance.in(Meter) * getConversionFactorToRotations();
-    controller.setReference(this.setpoint, controlType);
+    controller.setSetpoint(this.setpoint, controlType);
   }
 
   @Override
   public void setSetpoint(LinearVelocity velocity) {
     this.setpoint = velocity.in(MetersPerSecond) * getConversionFactorToRotations();
-    controller.setReference(this.setpoint, controlType);
+    controller.setSetpoint(this.setpoint, controlType);
   }
 
   @Override
   public void setSetpoint(AngularVelocity velocity) {
     this.setpoint = velocity.in(RotationsPerSecond) * 60.0;
     // API needs RPM, not RPS
-    controller.setReference(this.setpoint, controlType);
+    controller.setSetpoint(this.setpoint, controlType);
   }
 
   @Override
   public void setSetpoint(Angle angle) {
     this.setpoint = angle.in(Rotation);
-    controller.setReference(this.setpoint, controlType);
+    controller.setSetpoint(this.setpoint, controlType);
   }
 
   @Override
