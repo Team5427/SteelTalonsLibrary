@@ -45,7 +45,10 @@ public class VisionIOPhoton implements VisionIO {
       Supplier<Tuple2Plus<Double, Rotation2d>> getHeadingData) {
     cam = new PhotonCamera(cameraName);
 
-    photonPoseEstimator = new PhotonPoseEstimator(VisionConstants.kAprilTagLayout, cameraTransform);
+    photonPoseEstimator =
+        new PhotonPoseEstimator(
+            VisionConstants.kAprilTagLayout, PoseStrategy.CONSTRAINED_SOLVEPNP, cameraTransform);
+    photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.PNP_DISTANCE_TRIG_SOLVE);
     this.cameraOffset = cameraTransform;
     this.getReferencePose = getReferencePose;
     this.getHeadingData = getHeadingData;
@@ -117,6 +120,8 @@ public class VisionIOPhoton implements VisionIO {
                     PoseObservationType.PHOTONVISION_SINGLE_TAG));
           }
         }
+      }
+
 
         inputs.poseObservations = new PoseObservation[obs.size()];
 

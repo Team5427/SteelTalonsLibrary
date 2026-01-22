@@ -176,7 +176,7 @@ public class SwerveSubsystem extends SubsystemBase
     // Start odometry thread
     PhoenixOdometryThread.getInstance().start();
     // SparkOdometryThread.getInstance().start();
-
+    
     sysId =
         new SysIdRoutine(
             new SysIdRoutine.Config(

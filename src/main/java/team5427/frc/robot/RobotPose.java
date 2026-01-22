@@ -103,7 +103,6 @@ public class RobotPose {
   }
 
   public void resetAllPose(Pose2d resetPose) {
-    // resetPose = resetPose.plus(new Transform2d(0, 0, Rotation2d.k180deg));
     SwerveSubsystem.getInstance().resetGyro(resetPose.getRotation());
     resetOdometryPose(resetPose);
     resetEstimatedPose(resetPose);
