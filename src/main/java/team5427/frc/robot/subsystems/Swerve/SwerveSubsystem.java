@@ -10,15 +10,18 @@ import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.hal.FRCNetComm.tInstances;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.hal.HAL;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.concurrent.locks.Lock;
@@ -62,7 +65,9 @@ public class SwerveSubsystem extends SubsystemBase
   private Rotation2d gyroOffset = Rotation2d.kZero;
   private DriveFeedforwards driveFeedforwards;
   @Getter private SwerveDriveSimulation kDriveSimulation;
-
+  private final Field2d field = new Field2d();
+  private final SwerveDrivePoseEstimator poseEstimator 
+  ;
   public static DriveTrainSimulationConfig mapleSimConfig;
 
   private final SysIdRoutine sysId;
@@ -77,6 +82,9 @@ public class SwerveSubsystem extends SubsystemBase
   public static SwerveSubsystem getInstance() {
     return getInstance(null);
   }
+  private void log2d(){
+    field.setRobotPose(RobotPose.getInstance().getEstimatedPose());
+  }
 
   public static SwerveSubsystem getInstance(OdometryConsumer consumer) {
     if (m_instance == null) {
@@ -87,7 +95,7 @@ public class SwerveSubsystem extends SubsystemBase
 
   private SwerveSubsystem(OdometryConsumer consumer) {
     swerveModules = new SwerveModule[SwerveUtil.kDefaultNumModules];
-
+    poseEstimator = new SwerveDrivePoseEstimator(new SwerveDriveKinematics(null), gyroOffset, modulePositions, null);
     mapleSimConfig =
         DriveTrainSimulationConfig.Default()
             .withRobotMass(Kilogram.of(Constants.config.massKG))

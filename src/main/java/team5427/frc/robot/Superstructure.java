@@ -16,7 +16,7 @@ public final class Superstructure {
 
   private static IntakeStates kSelectedIntakeState = IntakeStates.STOWED;
   private static IntakeStates kPreviousIntakeState = IntakeStates.STOWED;
-
+  
   // Swerve States Enum
   public static enum SwerveStates {
     RAW_DRIVING,

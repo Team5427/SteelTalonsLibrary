@@ -5,14 +5,20 @@ import static edu.wpi.first.units.Units.KilogramSquareMeters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.MomentOfInertia;
 import edu.wpi.first.units.measure.Voltage;
+import team5427.frc.robot.Constants;
 import team5427.lib.drivers.CANDeviceId;
+import team5427.lib.drivers.LoggedTunableNumber;
 import team5427.lib.motors.MotorConfiguration;
 import team5427.lib.motors.MotorConfiguration.IdleState;
 import team5427.lib.motors.MotorConfiguration.MotorMode;
@@ -59,7 +65,111 @@ public final class SwerveConstants {
     kDriveMotorConfiguration.altA = kDriveMotorConfiguration.maxAcceleration;
   }
 
-  public static MotorConfiguration kSteerMotorConfiguration = new MotorConfiguration();
+
+    static {
+      kDriveMotorConfiguration.gearRatio = SwerveUtil.kSDSL3GearRatio;
+      kDriveMotorConfiguration.idleState = IdleState.kBrake;
+      kDriveMotorConfiguration.mode = MotorMode.kFlywheel;
+      kDriveMotorConfiguration.withFOC = true;
+
+      kDriveMotorConfiguration.currentLimit = 80;
+      kDriveMotorConfiguration.finalDiameterMeters = kWheelDiameterMeters;
+
+      kDriveMotorConfiguration.maxVelocity =
+          kDriveMotorConfiguration.getStandardMaxVelocity(MotorUtil.kKrakenX60FOC_MaxRPM);
+      kDriveMotorConfiguration.maxAcceleration = kDriveMotorConfiguration.maxVelocity * 2.0;
+
+      kDriveMotorConfiguration.kP = 70.789; // 2.64 , 30.64
+      // kDriveMotorConfiguration.kV = 0.75;
+      kDriveMotorConfiguration.kA = 6.0;
+      kDriveMotorConfiguration.kS = 0.5;
+      kDriveMotorConfiguration.altV = kDriveMotorConfiguration.maxVelocity;
+      kDriveMotorConfiguration.altA = kDriveMotorConfiguration.maxAcceleration;
+    }
+
+    public static MotorConfiguration kSteerMotorConfiguration = new MotorConfiguration();
+
+    static {
+      kSteerMotorConfiguration.gearRatio = SwerveUtil.kSDSSteerGearRatioMK4n;
+      kSteerMotorConfiguration.idleState = IdleState.kBrake;
+      kSteerMotorConfiguration.mode = MotorMode.kServo;
+      kSteerMotorConfiguration.currentLimit = 40;
+      kSteerMotorConfiguration.withFOC = true;
+
+      kSteerMotorConfiguration.maxVelocity =
+          kSteerMotorConfiguration.getStandardMaxVelocity(MotorUtil.kKrakenX60FOC_MaxRPM);
+      kSteerMotorConfiguration.maxAcceleration = kSteerMotorConfiguration.maxVelocity * 100.0;
+
+      // Tunable values
+      kSteerMotorConfiguration.kP = 4.613; // 7.0
+      kSteerMotorConfiguration.kD = 0.0004;
+      kSteerMotorConfiguration.kS = 0.5;
+      kSteerMotorConfiguration.kA = 0.2;
+      // kSteerMotorConfiguration.kA = 8.0;
+      kSteerMotorConfiguration.altV = kSteerMotorConfiguration.maxVelocity;
+      kSteerMotorConfiguration.altA = kSteerMotorConfiguration.maxAcceleration;
+    }
+
+
+    public static final double kRotationalKp = 1.4927;
+
+    public static double kTranslationalKp = 3.40;
+
+    public static LoggedTunableNumber kTranslationalKpTunable =
+        new LoggedTunableNumber("AUton Trasnlational Kp", 5.8);
+
+    static {
+    }
+
+    public static final double kAutoAlignRotationalKp = 0.2; // 0.09
+    public static final double kAutoAlignRotationalKd = 0.02; // 0.02
+    public static final double kAutoAlignTranslationKp = 2.0; // 5.0 , 2.7
+    public static final double kAutoAlignTranslationKd = 0.2; // 0.9
+    public static final double kAutoAlignServoTranslationalKp = 1.0;
+
+    public static final Rotation2d kServoAprilTagTargetLeft = Rotation2d.fromDegrees(50);
+    public static final Rotation2d kServoAprilTagTargetRight = Rotation2d.fromDegrees(-50);
+
+  public static ProfiledPIDController kRotationPIDController =
+        new ProfiledPIDController(
+            kAutoAlignRotationalKp, 0.0, kAutoAlignRotationalKd, new Constraints(1 * Math.PI, 1 * Math.PI));
+
+    static {
+      kRotationPIDController.setTolerance(Units.degreesToRadians(1));
+      kRotationPIDController.enableContinuousInput(-Math.PI, Math.PI);
+    }
+
+    public static PIDController kTranslationXPIDController =
+        new PIDController(kAutoAlignTranslationKp, 0.0, kAutoAlignTranslationKd);
+
+    public static PIDController kTranslationYPIDController =
+        new PIDController(kAutoAlignTranslationKp, 0.0, kAutoAlignTranslationKd);
+
+    static {
+      kTranslationXPIDController.setTolerance(Units.inchesToMeters(.5));
+      kTranslationXPIDController.setTolerance(Units.inchesToMeters(.5));
+    }
+
+    public static ProfiledPIDController kTranslationPIDController =
+        new ProfiledPIDController(
+            kAutoAlignTranslationKp,
+            0.0,
+            0.0,
+            new Constraints(
+                kDriveMotorConfiguration.maxVelocity/2, //  * Math.PI,
+                kDriveMotorConfiguration.maxAcceleration/2),
+            Constants.kLoopSpeed);
+
+    public static final double kAutoAlignTranslationalMaxSpeed =
+        SwerveConstants.kDriveMotorConfiguration.maxVelocity * 0.1 * 0.3;
+
+    public static final ProfiledPIDController kAutoAlignServoController =
+        new ProfiledPIDController(
+            kAutoAlignServoTranslationalKp,
+            0.0,
+            kAutoAlignTranslationKd,
+            new Constraints(kAutoAlignTranslationalMaxSpeed, kAutoAlignTranslationalMaxSpeed));
+
 
   static {
     kSteerMotorConfiguration.gearRatio = SwerveUtil.kSDSSteerGearRatioMK4n;

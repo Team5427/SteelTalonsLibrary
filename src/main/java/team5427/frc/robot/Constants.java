@@ -8,9 +8,23 @@ import static edu.wpi.first.units.Units.Hertz;
 
 import com.ctre.phoenix6.CANBus;
 import com.pathplanner.lib.config.RobotConfig;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.Frequency;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import team5427.lib.drivers.CANDeviceId;
+import team5427.lib.drivers.LoggedTunableNumber;
+import team5427.lib.motors.MotorConfiguration;
+import team5427.lib.motors.MotorConfiguration.IdleState;
+import team5427.lib.motors.MotorConfiguration.MotorMode;
+import team5427.lib.motors.MotorUtil;
+import team5427.lib.systems.swerve.SwerveUtil;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -72,4 +86,11 @@ public final class Constants {
     public static final double kDriverControllerJoystickDeadzone = 0.0;
     public static final double kDriverControllerRotationalControlJoystickDeadzone = 0.05;
   }
+
+  public static class RobotConfigConstants{
+    public static final Pose2d BLUEPOSE2D = new Pose2d(4.03, 4.04, Rotation2d.kZero);
+    public static final Pose2d REDPOSE2D = new Pose2d((16.45-4.03), 4.04, Rotation2d.k180deg);
+    
+  }
+
 }
