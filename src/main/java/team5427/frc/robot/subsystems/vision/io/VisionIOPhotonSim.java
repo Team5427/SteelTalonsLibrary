@@ -39,8 +39,6 @@ public class VisionIOPhotonSim implements VisionIO {
 
   Supplier<Tuple2Plus<Double, Rotation2d>> getHeadingData;
 
-
-
   public VisionIOPhotonSim(
       String cameraName,
       Transform3d cameraTransform,
@@ -131,9 +129,7 @@ public class VisionIOPhotonSim implements VisionIO {
   }
 
   @Override
-  public void applyCameraTransformation(Transform3d transformation) {
-
-  }
+  public void applyCameraTransformation(Transform3d transformation) {}
 
   @Override
   public void setStdDev(Matrix<N3, N1> stddev) {

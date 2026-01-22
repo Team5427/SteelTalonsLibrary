@@ -45,7 +45,6 @@ public class VisionConstants {
       new Transform3d(
           0.192, 0.358, Units.inchesToMeters(8.098), new Rotation3d(Rotation2d.kCCW_90deg));
 
-
   public static Transform3d[] kCameraTransforms = new Transform3d[kCameraCount];
 
   static {

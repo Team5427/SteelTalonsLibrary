@@ -208,7 +208,6 @@ public abstract class ModuleIOTalonFX implements ModuleIO {
     driveMotor.setEncoderPosition(0.0);
     driveMotor.useTorqueCurrentFOC(true);
 
-
     driveMotorPosition = driveMotor.getTalonFX().getPosition();
     steerMotorPosition = steerMotor.getTalonFX().getPosition();
 
