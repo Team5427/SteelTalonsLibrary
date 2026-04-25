@@ -5,14 +5,18 @@
 package team5427.frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.util.PathPlannerLogging;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import org.ironmaple.simulation.SimulatedArena;
@@ -87,9 +91,11 @@ public class RobotContainer {
         },
         SwerveSubsystem.getInstance());
 
-    autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser();
 
     buttonBindings();
+    createEventTriggers();
+    createNamedCommands();
   }
 
   private void buttonBindings() {
@@ -113,6 +119,10 @@ public class RobotContainer {
     return autoChooser.getSelected();
   }
 
+  public void createEventTriggers() {}
+
+  public void createNamedCommands() {}
+
   public void resetSimulationField() {
     if (Constants.currentMode != Constants.Mode.SIM) return;
     Pose2d pose = new Pose2d(3, 3, Rotation2d.kZero);
@@ -134,5 +144,46 @@ public class RobotContainer {
         "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
     Logger.recordOutput(
         "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
+  }
+
+  public void autoChooser() {
+    // Pathfinding.setPathfinder(new LocalADStarAK());
+    PathPlannerLogging.setLogActivePathCallback(
+        (activePath) -> {
+          Logger.recordOutput(
+              "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+        });
+    PathPlannerLogging.setLogTargetPoseCallback(
+        (targetPose) -> {
+          Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+        });
+
+    SendableChooser<Boolean> chooser = new SendableChooser<>();
+    chooser.setDefaultOption("Not Flipped", false);
+    chooser.addOption("Flipped", true);
+
+    SmartDashboard.putData(chooser);
+    chooser.setDefaultOption("Not Flipped", false);
+    chooser.onChange(
+        (Boolean flip) -> {
+          autoChooser =
+              AutoBuilder.buildAutoChooserWithOptionsModifier(
+                  autoStream ->
+                      autoStream.map(
+                          auto -> {
+                            auto = new PathPlannerAuto(auto.getName(), flip);
+                            return auto;
+                          }));
+          SmartDashboard.putData("Auto Chooser", autoChooser);
+        });
+
+    autoChooser =
+        AutoBuilder.buildAutoChooserWithOptionsModifier(
+            autoStream ->
+                autoStream.map(
+                    auto -> {
+                      auto = new PathPlannerAuto(auto.getName(), chooser.getSelected());
+                      return auto;
+                    }));
   }
 }
