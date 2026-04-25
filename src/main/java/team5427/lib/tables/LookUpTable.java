@@ -20,27 +20,45 @@ public class LookUpTable {
         new InterpolatingTreeMap<>(new TableInverseInterpolator(), new TableInterpolator());
   }
 
-  public void addpivotAngle(Double distance, Double pivotAngle) {
+  public void addPivotAngle(Double distance, Double pivotAngle) {
     pivotAngleLookup.put(distance, pivotAngle);
   }
 
-  public void addflyWheel1Speed(Double distance, Double speed) {
+  public void addFlyWheel1Speed(Double distance, Double speed) {
     flywheel1Lookup.put(distance, speed);
   }
 
-  public void addflyWheel2Speed(Double distance, Double speed) {
+  public void addFlyWheel2Speed(Double distance, Double speed) {
     flywheel2Lookup.put(distance, speed);
   }
 
-  public Double getpivotAngle(Double distance) {
+  public Double getPivotAngle(Double distance) {
     return pivotAngleLookup.get(distance);
   }
 
-  public Double getflyWheel1Speed(Double distance) {
+  public Double getFlyWheel1Speed(Double distance) {
     return flywheel1Lookup.get(distance);
   }
 
-  public Double getflyWheel2Speed(Double distance) {
+  public Double getFlyWheel2Speed(Double distance) {
     return flywheel2Lookup.get(distance);
+  }
+
+  public void resetPivotAngles() {
+    pivotAngleLookup.clear();
+  }
+
+  public void resetFlywheel1Speeds() {
+    flywheel1Lookup.clear();
+  }
+
+  public void resetFlywheel2Speeds() {
+    flywheel2Lookup.clear();
+  }
+
+  public void resetAll() {
+    resetPivotAngles();
+    resetFlywheel1Speeds();
+    resetFlywheel2Speeds();
   }
 }
