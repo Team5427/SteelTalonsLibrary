@@ -4,6 +4,11 @@ import static edu.wpi.first.units.Units.Kilogram;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Volts;
 
+import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
+import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveRequest.NativeSwerveRequest;
+import com.ctre.phoenix6.swerve.jni.SwerveJNI;
 import com.pathplanner.lib.util.DriveFeedforwards;
 import com.pathplanner.lib.util.swerve.SwerveSetpoint;
 import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
@@ -19,10 +24,13 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
+
 import lombok.Getter;
 import org.ironmaple.simulation.drivesims.COTS;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -65,7 +73,9 @@ public class SwerveSubsystem extends SubsystemBase
 
   public static DriveTrainSimulationConfig mapleSimConfig;
 
-  private final SysIdRoutine sysId;
+  private final SysIdRoutine m_driveSysId;
+  private final SysIdRoutine m_turnSysId;
+  private final SysIdRoutine m_angularSysId;
 
   private OdometryConsumer odometryConsumer;
 
@@ -177,15 +187,42 @@ public class SwerveSubsystem extends SubsystemBase
     PhoenixOdometryThread.getInstance().start();
     // SparkOdometryThread.getInstance().start();
 
-    sysId =
+    m_driveSysId =
         new SysIdRoutine(
             new SysIdRoutine.Config(
                 null,
                 null,
-                null,
-                (state) -> Logger.recordOutput("SysId/SwerveSysIdState", state.toString())),
+                null
+                // , (state) -> Logger.recordOutput("SysId/SwerveSysIdState", state.toString())
+            ),
             new SysIdRoutine.Mechanism(
-                (voltage) -> runDriveCharacterization(voltage.in(Volts)), null, this));
+                (voltage) -> {
+                  // runDriveCharacterization(voltage.in(Volts));
+                }, null, this));
+    m_turnSysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null
+                // , (state) -> Logger.recordOutput("SysId/SwerveSysIdState", state.toString())
+            ),
+            new SysIdRoutine.Mechanism(
+                (voltage) -> {
+                  // runDriveCharacterization(voltage.in(Volts));
+                }, null, this));
+    m_angularSysId =
+        new SysIdRoutine(
+            new SysIdRoutine.Config(
+                null,
+                null,
+                null
+                // , (state) -> Logger.recordOutput("SysId/SwerveSysIdState", state.toString())
+            ),
+            new SysIdRoutine.Mechanism(
+                (voltage) -> {
+                  // runDriveCharacterization(voltage.in(Volts));
+                }, null, this));
   }
 
   @Override
@@ -261,22 +298,33 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   @Override
-  public void runDriveCharacterization(double output) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'runDriveCharacterization'");
+  public void runDriveCharacterizationDynamic(SysIdRoutine.Direction direction) {
+    m_driveSysId.dynamic(direction);
   }
 
   @Override
-  public void runTurnCharacterization(double output) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException("Unimplemented method 'runTurnCharacterization'");
+  public void runTurnCharacterizationDynamic(SysIdRoutine.Direction direction) {
+    m_turnSysId.dynamic(direction);
   }
 
   @Override
-  public void runDrivetrainAngularCharacterization(double output) {
-    // TODO Auto-generated method stub
-    throw new UnsupportedOperationException(
-        "Unimplemented method 'runDrivetrainAngularCharacterization'");
+  public void runDrivetrainAngularCharacterizationDynamic(SysIdRoutine.Direction direction) {
+    m_angularSysId.dynamic(direction);
+  }
+
+  @Override
+  public void runDriveCharacterizationQuasistatic(SysIdRoutine.Direction direction) {
+    m_driveSysId.quasistatic(direction);
+  }
+
+  @Override
+  public void runTurnCharacterizationQuasistatic(SysIdRoutine.Direction direction) {
+    m_turnSysId.quasistatic(direction);
+  }
+
+  @Override
+  public void runDrivetrainAngularCharacterizationQuasistatic(SysIdRoutine.Direction direction) {
+    m_angularSysId.quasistatic(direction);
   }
 
   @Override
