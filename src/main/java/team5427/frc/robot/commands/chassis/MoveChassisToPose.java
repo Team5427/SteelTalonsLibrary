@@ -64,9 +64,11 @@ public class MoveChassisToPose extends Command {
       vy = -velocity * (error.getY() / distance);
     }
 
-    double omegaRadiansPerSecond =
-        DrivingConstants.kRotationController.calculate(
+    double omegaRadiansPerSecond = 0.0;
+    if (Math.abs(targetPose.getRotation().minus(robotPose.getRotation()).getDegrees())>1.5) {
+        omegaRadiansPerSecond = DrivingConstants.kRotationController.calculate(
             robotPose.getRotation().getRadians(), targetPose.getRotation().getRadians());
+    }
 
     ChassisSpeeds driverSpeeds =
         swerveSubsystem.getDriveSpeeds(

@@ -319,7 +319,7 @@ public class SwerveSubsystem extends SubsystemBase
             scaleDriveComponents(omegaInput, dampenAmount) * Math.PI);
 
     ChassisSpeeds fieldRelativeSpeeds =
-        ChassisSpeeds.fromRobotRelativeSpeeds(rawSpeeds, getGyroRotation().unaryMinus());
+        ChassisSpeeds.fromFieldRelativeSpeeds(rawSpeeds, getGyroRotation().unaryMinus());
 
     return fieldRelativeSpeeds;
   }
@@ -339,7 +339,7 @@ public class SwerveSubsystem extends SubsystemBase
             scaleDriveComponents(omegaInput, dampenAmount) * Math.PI);
 
     ChassisSpeeds fieldRelativeSpeeds =
-        ChassisSpeeds.fromRobotRelativeSpeeds(rawSpeeds, fieldOrientedRotation);
+        ChassisSpeeds.fromFieldRelativeSpeeds(rawSpeeds, fieldOrientedRotation);
 
     return fieldRelativeSpeeds;
   }
@@ -363,7 +363,7 @@ public class SwerveSubsystem extends SubsystemBase
             calculatedOmega);
 
     ChassisSpeeds fieldRelativeSpeeds =
-        ChassisSpeeds.fromRobotRelativeSpeeds(rawSpeeds, getGyroRotation().unaryMinus());
+        ChassisSpeeds.fromFieldRelativeSpeeds(rawSpeeds, getGyroRotation().unaryMinus());
 
     return fieldRelativeSpeeds;
   }
