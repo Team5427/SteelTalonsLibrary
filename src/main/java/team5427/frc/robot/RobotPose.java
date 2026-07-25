@@ -154,6 +154,7 @@ public class RobotPose {
     Logger.recordOutput(
         "Localization/Estimation/Robot", RobotPose.getInstance().getEstimatedPose());
     Logger.recordOutput("Localization/Odometry/Robot", RobotPose.getInstance().getOdometryPose());
+    Logger.recordOutput("Localization/Adaptive/Robot", RobotPose.getInstance().getAdaptivePose());
     Logger.recordOutput("Quest Pose", QuestNav.getInstance().getPose3d());
   }
 }
