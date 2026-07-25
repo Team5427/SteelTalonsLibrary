@@ -8,5 +8,7 @@ public class MotorUtil {
   public static final double kKrakenX60FOC_MaxRPM = 5800;
   public static final double kKrakenX44_MaxRPM = 7530;
   public static final double kKrakenX44FOC_MaxRPM = 7530;
+  public static final double kKrakenX60_Resistance = 0.033;
+  public static final double kKrakenX44_Resistance = 0.043;
   public static final double kZeroVoltage = 0.5;
 }

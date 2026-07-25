@@ -49,7 +49,7 @@ public final class DrivingConstants {
           new TunableControlConstants(
               "Swerve/Translation",
               new ControlConstants()
-                  .withPID(kRotationKp.get(), 0, kRotationKd.get())
+                  .withPID(kTranslationalKp.get(), 0, kTranslationalKd.get())
                   .withProfile(kTranslationalMaxVelocity.get(), kTranslationalMaxAcceleration.get())
                   .withTolerance(
                       kTranslationalPositionTolerance.get(),
