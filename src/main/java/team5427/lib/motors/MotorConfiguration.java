@@ -33,6 +33,8 @@ public class MotorConfiguration {
 
   public boolean withFOC;
 
+  public boolean useTorqueCurrentFOC;
+
   public ComplexGearRatio gearRatio;
   public double finalDiameterMeters;
 
@@ -65,6 +67,9 @@ public class MotorConfiguration {
     maxVelocity = 1.0;
     maxAcceleration = 1.0;
 
+    withFOC = false;
+    useTorqueCurrentFOC = false;
+
     idleState = IdleState.kBrake;
     mode = MotorMode.kFlywheel;
   }
@@ -93,6 +98,9 @@ public class MotorConfiguration {
 
     maxVelocity = parent.maxVelocity;
     maxAcceleration = parent.maxAcceleration;
+
+    withFOC = parent.withFOC;
+    useTorqueCurrentFOC = parent.useTorqueCurrentFOC;
 
     idleState = parent.idleState;
     mode = parent.mode;

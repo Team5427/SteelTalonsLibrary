@@ -103,6 +103,7 @@ public class SteelTalonFX implements IMotorController {
         configuration.isArm ? GravityTypeValue.Arm_Cosine : GravityTypeValue.Elevator_Static;
 
     withFOC = configuration.withFOC;
+    useTorqueCurrentFOC = configuration.useTorqueCurrentFOC;
     talonConfig.FutureProofConfigs = true;
 
     switch (configuration.mode) {
@@ -245,7 +246,7 @@ public class SteelTalonFX implements IMotorController {
         talonFX.setControl(
             isUsingTorqueCurrentFOC()
                 ? positionTorqueCurrentFOCRequest.withPosition(this.setpoint)
-                : positionDutyCycleRequest.withPosition(setpoint).withEnableFOC(withFOC));
+                : positionVoltageRequest.withPosition(setpoint).withEnableFOC(withFOC));
         break;
       default:
         DriverStation.reportWarning(
@@ -313,7 +314,7 @@ public class SteelTalonFX implements IMotorController {
         talonFX.setControl(
             isUsingTorqueCurrentFOC()
                 ? positionTorqueCurrentFOCRequest.withPosition(this.setpoint)
-                : positionDutyCycleRequest.withPosition(setpoint).withEnableFOC(withFOC));
+                : positionVoltageRequest.withPosition(setpoint).withEnableFOC(withFOC));
         break;
       default:
         DriverStation.reportWarning(
@@ -336,7 +337,7 @@ public class SteelTalonFX implements IMotorController {
         talonFX.setControl(
             isUsingTorqueCurrentFOC()
                 ? positionTorqueCurrentFOCRequest.withPosition(this.setpoint)
-                : positionDutyCycleRequest.withPosition(setpoint).withEnableFOC(withFOC));
+                : positionVoltageRequest.withPosition(setpoint).withEnableFOC(withFOC));
         break;
       default:
         DriverStation.reportWarning(
