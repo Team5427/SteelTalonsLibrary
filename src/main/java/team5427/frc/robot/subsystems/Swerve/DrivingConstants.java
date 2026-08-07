@@ -31,7 +31,7 @@ public final class DrivingConstants {
                   .withContinuous(-Math.PI, Math.PI)));
 
   public static LoggedTunableNumber kTranslationalKp =
-      new LoggedTunableNumber("Translational P", 1.0);
+      new LoggedTunableNumber("Translational P", 0.6);
   public static LoggedTunableNumber kTranslationalKd =
       new LoggedTunableNumber("Translational D", 0.1);
   public static LoggedTunableNumber kTranslationalMaxVelocity =
